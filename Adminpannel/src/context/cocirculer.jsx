@@ -11,10 +11,27 @@ import {Addevent,updateEvent,hideEvent,AllEvents,topEvent,EventsById,deleteEvent
 import {AddTestimorals,getAllTestimoral,updateTestimonial,getTestimonialById,hideTestimoralById} from "../utilities/cocirculer/home/Testimorals";
 import {AddAnouncement,AllNews,updateNewsById,getNewsById,HideNewsbyId} from "../utilities/cocirculer/news/Anouncement";
 import {getAllGallery,AddGallery,updateGallery,deleteGallery ,getGalleryById} from '../utilities/cocirculer/Gallery/gallery'
+import {
+  createAcademicClass,
+  createAcademicSession,
+  getTeacherAttendanceByDailyToken,
+  getTeacherAttendanceDailyQr,
+  getAcademicClassById,
+  getAcademicSessionById,
+  listAcademicClasses,
+  listAcademicMentors,
+  listAcademicSessions,
+  updateAcademicClassById,
+  updateAcademicSessionById
+} from '../utilities/cocirculer/academic';
+import {
+  getOwnProfile,
+  updateOwnProfile
+} from '../utilities/cocirculer/profileManagement';
 export const CocirculerContext = createContext(1);
 const  CocirculerContextProvider = (props) => {
   const [cirToken , setCirToken]= useState(localStorage.getItem('cirToken'));
-  const backendURL = import.meta.env.VITE_BACKEND_URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
   const [getcontact, setContact] = useState([]);
   const [getHeader, setHeader] = useState([]);
@@ -33,6 +50,11 @@ const  CocirculerContextProvider = (props) => {
   // 
   const [news, setNews] = useState([])
   const [newsById,setNewsById] = useState({})
+  const [academicSessions, setAcademicSessions] = useState([])
+  const [academicMentors, setAcademicMentors] = useState([])
+  const [academicClasses, setAcademicClasses] = useState([])
+  const [teacherDailyQr, setTeacherDailyQr] = useState(null)
+  const [teacherDailyAttendance, setTeacherDailyAttendance] = useState(null)
 
 
   // ---------fuctions--------------
@@ -58,8 +80,8 @@ const  CocirculerContextProvider = (props) => {
 
 
 // mentor
-const handelAddMentor = ( formdata)=>{
-  AddMentor(backendURL, formdata, cirToken)
+const handelAddMentor = async (payload)=>{
+  return await AddMentor(backendURL, payload, cirToken)
 }
 
 const handelgetMentor = ()=>{
@@ -158,6 +180,54 @@ const handelDeleteGallery = (id)=>{
   deleteGallery(backendURL,id,cirToken )
 }
 
+// academic
+const handleGetAcademicSessions = async ()=>{
+  const data = await listAcademicSessions(backendURL, cirToken)
+  setAcademicSessions(data)
+}
+const handleGetAcademicMentors = async (sessionId)=>{
+  const data = await listAcademicMentors(backendURL, cirToken, sessionId)
+  setAcademicMentors(data)
+}
+const handleGetAcademicClasses = async (sessionId)=>{
+  const data = await listAcademicClasses(backendURL, cirToken, sessionId)
+  setAcademicClasses(data)
+}
+const handleAddAcademicSession = async (payload)=>{
+  return await createAcademicSession(backendURL, cirToken, payload)
+}
+const handleAddAcademicClass = async (payload)=>{
+  return await createAcademicClass(backendURL, cirToken, payload)
+}
+const handleGetAcademicSessionById = async (id)=>{
+  return await getAcademicSessionById(backendURL, cirToken, id)
+}
+const handleUpdateAcademicSessionById = async (id, payload)=>{
+  return await updateAcademicSessionById(backendURL, cirToken, id, payload)
+}
+const handleGetAcademicClassById = async (id)=>{
+  return await getAcademicClassById(backendURL, cirToken, id)
+}
+const handleUpdateAcademicClassById = async (id, payload)=>{
+  return await updateAcademicClassById(backendURL, cirToken, id, payload)
+}
+const handleGetTeacherAttendanceDailyQr = async (date)=>{
+  const data = await getTeacherAttendanceDailyQr(backendURL, cirToken, date)
+  setTeacherDailyQr(data)
+  return data
+}
+const handleGetTeacherDailyAttendance = async (query = {})=>{
+  const data = await getTeacherAttendanceByDailyToken(backendURL, cirToken, query)
+  setTeacherDailyAttendance(data)
+  return data
+}
+const handleGetOwnProfile = async ()=>{
+  return await getOwnProfile(backendURL, cirToken)
+}
+const handleUpdateOwnProfile = async (payload)=>{
+  return await updateOwnProfile(backendURL, cirToken, payload)
+}
+
   const value = {
   cirToken , setCirToken,  backendURL,
   //  landpage
@@ -187,6 +257,25 @@ const handelDeleteGallery = (id)=>{
   gallaryAll, setGalleryAll,handelGalleryAll,
   GalleryById, setGalleryById,handelGalleryById,
   handelAddGallery,handelUpdateGallery,handelDeleteGallery,
+
+  academicSessions,
+  academicMentors,
+  academicClasses,
+  handleGetAcademicSessions,
+  handleGetAcademicMentors,
+  handleGetAcademicClasses,
+  handleAddAcademicSession,
+  handleAddAcademicClass,
+  handleGetAcademicSessionById,
+  handleUpdateAcademicSessionById,
+  handleGetAcademicClassById,
+  handleUpdateAcademicClassById,
+  teacherDailyQr,
+  teacherDailyAttendance,
+  handleGetTeacherAttendanceDailyQr,
+  handleGetTeacherDailyAttendance,
+  handleGetOwnProfile,
+  handleUpdateOwnProfile,
 
 
   //  about section

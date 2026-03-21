@@ -2,7 +2,12 @@ import axios from "axios"
 import { toast } from "react-toastify"
 const AddTestimorals =async (backendURL, formdata, cirToken) => {
   try {
-    const {data}= await axios.post(backendURL+'/api/cocirculer/testimorals/add',formdata, {headers:{authcociculertoken :cirToken}})
+    const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+    const config = {
+        withCredentials: true,
+        headers: hasJwt ? { authcociculertoken: cirToken } : {}
+    };
+    const {data}= await axios.post(backendURL+'/api/cocirculer/testimorals/add',formdata, config)
     if(data.success){
         toast.success(data.message);
     }
@@ -17,9 +22,12 @@ const AddTestimorals =async (backendURL, formdata, cirToken) => {
 }
 const getAllTestimoral = async (backendURL, setTestimoral, cirToken) => {
   try {
-      console.log("backendURL", backendURL, cirToken)
-     
-      const {data} = await axios.get(backendURL+'/api/cocirculer/testimorals', {headers:{authCociculertoken:cirToken}} )
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.get(backendURL+'/api/cocirculer/testimorals', config)
      if (data.success) {
           setTestimoral(data.data)
           toast.success(data.message);
@@ -34,9 +42,12 @@ const getAllTestimoral = async (backendURL, setTestimoral, cirToken) => {
 }
 const updateTestimonial = async (backendURL,formdata, id,cirToken ) => {
   try {
-      console.log("backendURL", backendURL, cirToken)
-     
-      const {data} = await axios.patch(backendURL+`/api/cocirculer/testimorals/update/${id}`,formdata, {headers:{authCociculertoken:cirToken}} )
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.patch(backendURL+`/api/cocirculer/testimorals/update/${id}`,formdata, config)
      if (data.success) {
           toast.success(data.message);
      }
@@ -51,9 +62,12 @@ const updateTestimonial = async (backendURL,formdata, id,cirToken ) => {
 
 const getTestimonialById = async (backendURL,setTestimoralById,id,cirToken) => {
   try {
-      console.log("backendURL", backendURL, cirToken)
-     
-      const {data} = await axios.get(backendURL+`/api/cocirculer/testimorals/view/${id}`, {headers:{authCociculertoken:cirToken}} )
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.get(backendURL+`/api/cocirculer/testimorals/view/${id}`, config)
      if (data.success) {
           setTestimoralById(data.data)
           toast.success(data.message);
@@ -69,9 +83,12 @@ const getTestimonialById = async (backendURL,setTestimoralById,id,cirToken) => {
 
 const hideTestimoralById = async (backendURL, id, cirToken) => {
   try {
-      console.log("backendURL", backendURL, cirToken)
-     
-      const {data} = await axios.patch(backendURL+`/api/cocirculer/testimorals/change/${id}`,{}, {headers:{authCociculertoken:cirToken}} )
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.patch(backendURL+`/api/cocirculer/testimorals/change/${id}`,{}, config)
      if (data.success) {
           toast.success(data.message);
      }

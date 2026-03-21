@@ -2,9 +2,12 @@ import axios from "axios"
 import { toast } from "react-toastify"
 const AllMentor =async (backendURL, setMentor, cirToken) => {
   try {
-    
-    console.log("I am all mentor geting")
-    const {data} = await axios.get(backendURL+ '/api/cocirculer/mentor/all', {headers: {authCociculertoken: cirToken}});
+    const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+    const config = {
+        withCredentials: true,
+        headers: hasJwt ? { authCociculertoken: cirToken } : {}
+    };
+    const {data} = await axios.get(backendURL+ '/api/cocirculer/member/all', config);
     if(data.success){
         setMentor(data.data);
         toast.success(data.message);

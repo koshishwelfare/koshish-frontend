@@ -2,7 +2,12 @@ import axios from 'axios'
 import {toast} from 'react-toastify'
 const getAllGallery = async (backendURL,setGalleryAll,cirToken) => {
    try {
-       const {data} = await axios.get(backendURL+ '/api/cocirculer/gallery',{headers:{authCociculertoken:cirToken}})
+       const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+       const config = {
+           withCredentials: true,
+           headers: hasJwt ? { authCociculertoken: cirToken } : {}
+       };
+       const {data} = await axios.get(backendURL+ '/api/cocirculer/gallery', config)
        if(data.success) {
         setGalleryAll(data.data);
            toast.success(data.message);
@@ -10,56 +15,69 @@ const getAllGallery = async (backendURL,setGalleryAll,cirToken) => {
        else toast.error(data.message);
    } catch (error) {
      console.log(error);
-     setGalleryAll('5xx');getAllAlumni
      toast.error(error.message);
    }
 }
 const AddGallery = async (backendURL,formdata,cirToken) => {
   try {
-      const {data} = await axios.post(backendURL+ '/api/cocirculer/gallery/add',formdata,{headers:{authCociculertoken:cirToken}})
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.post(backendURL+ '/api/cocirculer/gallery/add',formdata, config)
       if(data.success) {
-        setNewsPaper(data.data);
           toast.success(data.message);
       }
       else toast.error(data.message);
   } catch (error) {
     console.log(error);
-    setNewsPaper('5xx');
     toast.error(error.message);
   }
 }
 const deleteGallery = async (backendURL,id,cirToken) => {
     try {
-        const {data} = await axios.delete(backendURL+ `/api/cocirculer/gallery/delete/${id}`,{headers:{authCociculertoken:cirToken}})
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.delete(backendURL+ `/api/cocirculer/gallery/delete/${id}`, config)
         if(data.success) {
-          setNewsPaper(data.data);
             toast.success(data.message);
         }
         else toast.error(data.message);
     } catch (error) {
       console.log(error);
-      setNewsPaper('5xx');
       toast.error(error.message);
     }
   }
   const updateGallery = async (backendURL,formdata,id,cirToken) => {
     try {
-        const {data} = await axios.patch(backendURL+ `/api/cocirculer/gallery/update/${id}`,formdata,{headers:{authCociculertoken:cirToken}})
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.patch(backendURL+ `/api/cocirculer/gallery/update/${id}`,formdata, config)
         if(data.success) {
-         
             toast.success(data.message);
         }
         else toast.error(data.message);
     } catch (error) {
       console.log(error);
-      
       toast.error(error.message);
     }
   }
 
 const getGalleryById = async (backendURL,setGalleryById,id,cirToken ) => {
     try {
-        const {data} = await axios.get(backendURL+ `/api/cocirculer/gallery/${id}`,{headers:{authCociculertoken:cirToken}})
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.get(backendURL+ `/api/cocirculer/gallery/${id}`, config)
         if(data.success) {
             setGalleryById(data.data);
             toast.success(data.message);
@@ -67,7 +85,6 @@ const getGalleryById = async (backendURL,setGalleryById,id,cirToken ) => {
         else toast.error(data.message);
     } catch (error) {
       console.log(error);
-      setGalleryById('5xx');
       toast.error(error.message);
     }
   }
