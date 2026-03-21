@@ -1,34 +1,59 @@
 import axios from 'axios'
 import {toast} from 'react-toastify'
-const getAllMemories = async (backendURL,setMemories) => {
+
+const buildQueryParams = (options = {}) => {
+  const defaultParams = {
+    page: 1,
+    limit: 20
+  };
+  
+  const mergedParams = { ...defaultParams, ...options };
+  
+  // Remove undefined, null, and empty string values
+  return Object.fromEntries(
+    Object.entries(mergedParams).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+  );
+};
+
+const getAllMemories = async (backendURL, setMemories, options = {}) => {
    try {
-       const {data} = await axios.get(backendURL+ '/api/app/memories')
+       const params = buildQueryParams({
+         isNews: false,
+         ...options
+       });
+
+       const query = new URLSearchParams(params).toString();
+       const {data} = await axios.get(`${backendURL}/api/app/memories${query ? '?' + query : ''}`)
        if(data.success) {
         setMemories(data.data);
            toast.success(data.message);
        }
        else toast.error(data.message);
    } catch (error) {
-    //  console.log(error);
-    //  setMemories('5xx');
      toast.error(error.message);
    }
 }
-const getAllNews = async (backendURL,setNewsPaper) => {
+
+const getAllNews = async (backendURL, setNewsPaper, options = {}) => {
   try {
-      const {data} = await axios.get(backendURL+ '/api/app/newspaper')
+      const params = buildQueryParams({
+        isNews: true,
+        ...options
+      });
+
+      const query = new URLSearchParams(params).toString();
+      const {data} = await axios.get(`${backendURL}/api/app/newspaper${query ? '?' + query : ''}`)
       if(data.success) {
         setNewsPaper(data.data);
           toast.success(data.message);
       }
       else toast.error(data.message);
   } catch (error) {
-    // console.log(error);
-    setNewsPaper('5xx');
     toast.error(error.message);
   }
 }
-const getGalleryById = async (backendURL,setGalleryById,id) => {
+
+const getGalleryById = async (backendURL, setGalleryById, id) => {
     try {
         const {data} = await axios.get(backendURL+ `/api/app/gallery/${id}`)
         if(data.success) {
@@ -37,7 +62,6 @@ const getGalleryById = async (backendURL,setGalleryById,id) => {
         }
         else toast.error(data.message);
     } catch (error) {
-      // console.log(error);
       setGalleryById('5xx');
       toast.error(error.message);
     }

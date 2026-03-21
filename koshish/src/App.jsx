@@ -1,5 +1,6 @@
 import { useState, useContext ,useEffect} from 'react'
 import { ToastContainer, toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 import IndexApp from './pages/App'
 import IndexStudent from './pages/student'
 import IndexTeacher from './pages/teachers'
@@ -8,6 +9,10 @@ import { TeacherContext } from './context/TeacherContext'
 function App() {
     const {stuToken}= useContext(StudentContext);
     const {teaToken}= useContext(TeacherContext);
+  const location = useLocation();
+
+  const isStudentPath = location.pathname.startsWith('/student');
+  const isTeacherPath = location.pathname.startsWith('/teacher');
 
  useEffect(() => {
   const onLoad = () => {
@@ -26,12 +31,11 @@ function App() {
      { 
      <div>
      {
-        !(stuToken || teaToken ) 
-        ? <IndexApp/>
-        : <div>
-          {stuToken&& <IndexStudent/>}
-          {teaToken && <IndexTeacher/>}
-        </div>
+        isStudentPath
+          ? (stuToken ? <IndexStudent/> : <IndexApp/>)
+          : isTeacherPath
+            ? (teaToken ? <IndexTeacher/> : <IndexApp/>)
+            : <IndexApp/>
       }
        <ToastContainer />
        </div>
