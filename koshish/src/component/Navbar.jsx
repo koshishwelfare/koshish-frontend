@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import koshishLogo from "../assets/koshishlogo.png";
+import koshishLogo from "../assets/koshish.svg";
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
@@ -94,7 +94,7 @@ const Navbar = () => {
           >
             About
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to="/contact"
             className={({ isActive }) =>
               `transition hover:text-green-400 ${
@@ -103,14 +103,25 @@ const Navbar = () => {
             }
           >
             Contact
-          </NavLink>
+          </NavLink> */}
         </ul>
 
         {/* Desktop Button */}
         <div className="hidden md:flex">
-          <button className="px-5 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
-            Join Us
-          </button>
+          <div className="flex items-center gap-3">
+            <NavLink to="/student-auth">
+              <button className="px-5 py-2 bg-white text-blue10 rounded hover:bg-gray-100 transition font-semibold">
+                Student Login
+              </button>
+            </NavLink>
+            <NavLink
+              to="/contact">
+                <button className="px-5 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+              Join Us
+            </button>
+              </NavLink>
+          </div>
+          
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -190,6 +201,17 @@ const Navbar = () => {
               }
             >
               About Us
+            </NavLink>
+            <NavLink
+              to="/student-auth"
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `transition hover:text-green-400 ${
+                  isActive ? "text-green-400 text-xl border-b-2  border-green-400" : "text-white"
+                }`
+              }
+            >
+              Student Login
             </NavLink>
             <NavLink
               to="/contact"

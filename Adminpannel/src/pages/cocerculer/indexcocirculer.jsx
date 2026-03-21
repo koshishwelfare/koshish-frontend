@@ -1,5 +1,4 @@
-import React from 'react'
-import { Routes, Route} from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Footer from '../../components/Footer'
 import Navbar from '../../components/Navbar'
 import DashboardCociculer from './DashboardCociculer';
@@ -32,20 +31,29 @@ import Addgallery from '../../components/cocercular/Gallery/Addgallery';
 import GalleryById from '../../components/cocercular/Gallery/GalleryById';
 import UpdateGallery from '../../components/cocercular/Gallery/UpdateGallery';
 import AllGallary from '../../components/cocercular/Gallery/AllGallary';
+import AcademicSessionList from '../../components/cocercular/Academic/AcademicSessionList';
+import AcademicSessionView from '../../components/cocercular/Academic/AcademicSessionView';
+import AcademicSessionEdit from '../../components/cocercular/Academic/AcademicSessionEdit';
+import AcademicClassList from '../../components/cocercular/Academic/AcademicClassList';
+import AcademicClassView from '../../components/cocercular/Academic/AcademicClassView';
+import AcademicClassEdit from '../../components/cocercular/Academic/AcademicClassEdit';
+import AcademicTeacherAttendance from '../../components/cocercular/Academic/AcademicTeacherAttendance';
+import ProfileManagement from '../../components/cocercular/ProfileManagement/ProfileManagement';
 const Indexcocirculer = () => {
   return (
-    <div>
+    <div className="app-shell">
         <Navbar/>
-        
-        <div className='flex justify-start'>
-                 <SidebarCocirculer/>
-                     <div  className='w-full' > 
-                      <Routes>
+
+        <main className="app-content mt-5 flex flex-col gap-4 md:flex-row">
+          <SidebarCocirculer/>
+          <section className='w-full'>
+            <div className="admin-surface min-h-[74vh] p-4 sm:p-6">
+                        <Routes>
                         <Route path='/' element={<DashboardCociculer />} />
-                        <Route path='/mentor/add' element={<AddMentor/>} />
-                        <Route path='/mentor/all' element={<AllMentor/>} />
-                        <Route path='/mentor/:id' element={<GetMentorById/>} />
-                        <Route path='/mentor/update/:id' element={<UpdateMentor/>} />
+                        <Route path='/member/add' element={<AddMentor/>} />
+                        <Route path='/member/all' element={<AllMentor/>} />
+                        <Route path='/member/:id' element={<GetMentorById/>} />
+                        <Route path='/member/update/:id' element={<UpdateMentor/>} />
                         {/* home */}
                         {/* header */}
                         <Route path='/landpage/header/add' element={<Header/>} />
@@ -77,10 +85,20 @@ const Indexcocirculer = () => {
                         <Route path='/gallery/add' element={<Addgallery/>} />
                         <Route path='/gallery/update/:id' element={<UpdateGallery/>} />
                         <Route path='/gallery/:id' element={<GalleryById/>} />
+                        <Route path='/academic' element={<Navigate to='/academic/sessions' replace />} />
+                        <Route path='/academic/sessions' element={<AcademicSessionList/>} />
+                        <Route path='/academic/sessions/view/:id' element={<AcademicSessionView/>} />
+                        <Route path='/academic/sessions/edit/:id' element={<AcademicSessionEdit/>} />
+                        <Route path='/academic/classes' element={<AcademicClassList/>} />
+                        <Route path='/academic/classes/view/:id' element={<AcademicClassView/>} />
+                        <Route path='/academic/classes/edit/:id' element={<AcademicClassEdit/>} />
+                        <Route path='/academic/teacher-attendance' element={<AcademicTeacherAttendance/>} />
+                        <Route path='/profile-management' element={<ProfileManagement/>} />
                         <Route path='/contact' element={<Contact/>} />
                       </Routes>
-                     </div>
-                    </div>
+            </div>
+          </section>
+        </main>
         <Footer/>
     </div>
   )

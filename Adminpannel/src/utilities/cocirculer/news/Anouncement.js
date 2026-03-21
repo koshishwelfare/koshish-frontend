@@ -3,7 +3,12 @@ import axios from 'axios'
 import {toast} from 'react-toastify'
 const AddAnouncement = async (backendURL, formdata, cirToken) => {
   try {
-      const {data} = await axios.post(backendURL+ '/api/cocirculer/announcement/add',formdata ,{headers:{authCociculertoken:cirToken}})
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.post(backendURL+ '/api/cocirculer/announcement/add',formdata , config)
       if (data.success){
           toast.success(data.message);
       }
@@ -16,7 +21,12 @@ const AddAnouncement = async (backendURL, formdata, cirToken) => {
 }
 const AllNews = async (backendURL,setNews,cirToken) => {
   try {
-      const {data} = await axios.get(backendURL+ '/api/cocirculer/announcement/',{headers:{authCociculertoken:cirToken}})
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.get(backendURL+ '/api/cocirculer/announcement/',config)
       if (data.success){
           setNews(data.data)
           toast.success(data.message);
@@ -30,10 +40,12 @@ const AllNews = async (backendURL,setNews,cirToken) => {
 }
 const updateNewsById = async (backendURL,formdata,id,cirToken) => {
   try {
-       formdata.forEach((key, value) => {
-          console.log(key,"  ", value)
-       });
-      const {data} = await axios.patch(backendURL+ `/api/cocirculer/announcement/update/${id}`,formdata ,{headers:{authCociculertoken:cirToken}})
+       const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+       const config = {
+           withCredentials: true,
+           headers: hasJwt ? { authCociculertoken: cirToken } : {}
+       };
+      const {data} = await axios.patch(backendURL+ `/api/cocirculer/announcement/update/${id}`,formdata , config)
       if (data.success){
           toast.success(data.message);
       }
@@ -46,7 +58,12 @@ const updateNewsById = async (backendURL,formdata,id,cirToken) => {
 }
 const getNewsById = async (backendURL,setNewsById,id,cirToken ) => {
   try {
-      const {data} = await axios.get(backendURL+ `/api/cocirculer/announcement/view/${id}`,{headers:{authCociculertoken:cirToken}})
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+      const {data} = await axios.get(backendURL+ `/api/cocirculer/announcement/view/${id}`,config)
       if (data.success){
           setNewsById(data.data)
           toast.success(data.message);
@@ -60,7 +77,12 @@ const getNewsById = async (backendURL,setNewsById,id,cirToken ) => {
 }
 const HideNewsbyId = async (backendURL,id,cirToken) => {
   try {
-      const {data} = await axios.patch(backendURL+ `/api/cocirculer/announcement/hide/${id}`,formdata ,{headers:{authCociculertoken:cirToken}})
+      const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+      const config = {
+          withCredentials: true,
+          headers: hasJwt ? { authCociculertoken: cirToken } : {}
+      };
+    const {data} = await axios.patch(backendURL+ `/api/cocirculer/announcement/hide/${id}`, {}, config)
       if (data.success){
           toast.success(data.message);
       }

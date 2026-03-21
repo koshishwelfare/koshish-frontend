@@ -2,7 +2,12 @@ import axios from "axios"
 import { toast } from "react-toastify"
 const getMentorById = async(backendURL, setgetMentorById,id, cirToken) => {
   try {
-      const {data} = await axios.get(backendURL+ `/api/cocirculer/mentor/u/${id}`, {headers: {authCociculertoken: cirToken}});
+  const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+  const config = {
+    withCredentials: true,
+    headers: hasJwt ? { authCociculertoken: cirToken } : {}
+  };
+  const {data} = await axios.get(backendURL+ `/api/cocirculer/member/u/${id}`, config);
          if(data.success){
             setgetMentorById(data.data);
              toast.success(data.message);
@@ -15,7 +20,12 @@ const getMentorById = async(backendURL, setgetMentorById,id, cirToken) => {
 }
 const TerminateMentorById = async(backendURL,id, cirToken) => {
   try {
-      const {data} = await axios.patch(backendURL+ `/api/cocirculer/mentor/terminate/${id}`,{}, {headers: {authCociculertoken: cirToken}});
+  const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+  const config = {
+    withCredentials: true,
+    headers: hasJwt ? { authCociculertoken: cirToken } : {}
+  };
+  const {data} = await axios.patch(backendURL+ `/api/cocirculer/member/terminate/${id}`,{}, config);
          if(data.success){
            
              toast.success(data.message);
@@ -28,7 +38,7 @@ const TerminateMentorById = async(backendURL,id, cirToken) => {
 }
 const MakeTopMentorById = async(backendURL,id, cirToken) => {
   try {
-      const {data} = await axios.patch(backendURL+ `/api/cocirculer/mentor/top/${id}`,{}, {headers: {authCociculertoken: cirToken}});
+  const {data} = await axios.patch(backendURL+ `/api/cocirculer/member/top/${id}`,{}, {headers: {authCociculertoken: cirToken}});
          if(data.success){
            
              toast.success(data.message);

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../../../context/App';
 import { FaLinkedin } from "react-icons/fa";
@@ -29,18 +30,27 @@ const MyMentor = () => {
     );
   }
 
-  return (
+  return myMentor &&  (
     <div className="min-h-screen bg-green-50 flex items-center justify-center pt-24 px-4 pb-32">
+        <Helmet>
+          <title>{`${myMentor.name} - Koshish`}</title>
+          <meta name='description' content={`Learn more about ${myMentor.name}, a mentor at Koshish.`} />
+          <meta name='keywords' content={`Koshish, Mentors, ${myMentor.name}`} />
+          <meta name='author' content='Koshish Team' />
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <meta name='robots' content='index, follow' />
+        </Helmet>
+
       <div className="max-w-4xl w-full bg-green-100 shadow-2xl rounded-2xl p-8 md:p-12 flex flex-col items-center text-center space-y-8">
 
         {/* Heading */}
         <h1 className="text-3xl md:text-5xl font-extrabold text-blue10">
-          About the Mentor
+          About the Member
         </h1>
 
         {/* Mentor Image */}
         <img
-          src={myMentor.image || 'https://via.placeholder.com/150'}
+          src={myMentor.image }
           alt={myMentor.name || 'Mentor Photo'}
           className="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover border-4 border-blue-300 shadow-lg"
         />
@@ -50,7 +60,7 @@ const MyMentor = () => {
           <h2 className="text-2xl md:text-4xl font-bold text-blue10">
             {myMentor.name || 'Unnamed Mentor'}
           </h2>
-          {myMentor.yog !== 'NAN' && (
+          {myMentor.yog !== -1 && (
             <p className="text-blue-500 text-lg mt-1">
               {myMentor.yog - 4} - {myMentor.yog-2000}
             </p>
@@ -97,11 +107,20 @@ const MyMentor = () => {
           {myMentor.classTeacher !== 'NAN' && (
             <p className="text-gray-800 text-lg"><strong>👨‍🏫 Class Teacher:</strong> {myMentor.classTeacher}</p>
           )}
+          {myMentor.isCertify && (
+            <p className="text-gray-600 text-sm">
+              <a href={`${window.location.origin}/certify/${myMentor.type}/${id}` } target='_blank' >View Certificate </a>
+              
+            </p>
+          )}
           {myMentor.joinTime && (
             <p className="text-gray-600 text-sm">
               Joined on {new Date(myMentor.joinTime).toDateString()}
             </p>
           )}
+          
+          
+          
           {myMentor.linkedin !== 'NAN' && (
             <div className="flex items-center space-x-2 pt-2">
               <span className="text-gray-700 text-lg font-semibold">🔗 Contact: </span>

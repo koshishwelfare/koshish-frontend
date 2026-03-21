@@ -1,30 +1,141 @@
 @import "tailwindcss";
 @theme {
-    /* Primary Green (Base Color) */
-   --color-green00 : #4C8826;
-   /* Secondary Greens (Lighter & Darker Variants) */
-         /*Lighter Green (For highlights, accents)*/
-   --color-green10 : #7CB342; /*(RGB: 124, 179, 66)*/
-   --color-green11 : #A5D6A7; /*(RGB: 165, 214, 167)*/
-        /*Darker Green (For contrast, depth)*/
-   --color-green12 : #2E7D32; /*(RGB: 46, 125, 50)*/
-   --color-green12 : #1B5E20; /*(RGB: 27, 94, 32)*/
-   /* Tertiary Greens (Supporting Shades for Gradient/Depth) */
-   --color-green20 : #8BC34A; /*  (RGB: 139, 195, 74) Muted Green (For softer looks)*/
-   --color-green21: #145A32; /*(RGB: 20, 90, 50) Deep Forest Green (For strong emphasis)*/
-    /* Primary Blue (Base Color) */
-    --color-blue00 : #0003FB;
-    /* Secondary Blues (Lighter & Darker Variants) */
-    /*Lighter Blues (For highlights, accents)*/
-    --color-blue10 :#2196F3; /*(RGB: 33, 150, 243) → Bright sky blue*/ 
-    --color-blue11 : #90CAF9; /*(RGB: 144, 202, 249) → Soft pastel blue*/
-   
-    /*Darker Blues (For contrast, depth)*/
-    --color-blue12 : #0D47A1;  /* (RGB: 13, 71, 161) → Deep navy blue*/
-    --color-blue12 : #1A237E; /* (RGB: 26, 35, 126) → Rich royal blue*/
-    /* Tertiary Greens (Supporting Shades for Gradient/Depth) */
-    --color-blue20 : #64B5F6; /*(RGB: 100, 181, 246) → Cool soft blue*/
-    --color-blue21 : #3F51B5; /*(RGB: 63, 81, 181) → Strong energetic blue*/
-   
+      --color-brand-900: #0f1f3a;
+      --color-brand-800: #17315a;
+      --color-brand-700: #1f4680;
+      --color-brand-500: #2f6fbe;
+      --color-brand-100: #dce8fa;
 
- }
+      --color-accent-600: #187a46;
+      --color-accent-500: #23965a;
+      --color-accent-100: #d8f3e4;
+
+      --color-surface-950: #0f172a;
+      --color-surface-900: #1e293b;
+      --color-surface-800: #334155;
+      --color-surface-100: #f1f5f9;
+      --color-surface-50: #f8fafc;
+
+      --color-text-900: #0f172a;
+      --color-text-700: #334155;
+      --color-text-500: #64748b;
+
+      --color-danger-600: #dc2626;
+      --color-danger-100: #fee2e2;
+}
+
+:root {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--color-text-900);
+      background: linear-gradient(160deg, #f8fafc 0%, #edf4ff 40%, #f6fbf8 100%);
+}
+
+@layer base {
+      * {
+            box-sizing: border-box;
+      }
+
+      body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--color-text-900);
+            background: transparent;
+      }
+
+      #root {
+            min-height: 100vh;
+      }
+}
+
+@layer components {
+      .app-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+      }
+
+      .app-content {
+            width: min(1320px, 94vw);
+            margin-inline: auto;
+      }
+
+      .admin-surface {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+            backdrop-filter: blur(8px);
+      }
+
+      .admin-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      }
+
+      .admin-heading {
+            font-size: clamp(1.4rem, 2.6vw, 2rem);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            font-weight: 800;
+      }
+
+      .admin-subheading {
+            color: var(--color-text-500);
+            font-size: 0.94rem;
+      }
+
+      .admin-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0.62rem 0.8rem;
+            background: #fff;
+            transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .admin-input:focus {
+            border-color: var(--color-brand-500);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(47, 111, 190, 0.18);
+      }
+
+      .admin-btn {
+            border-radius: 10px;
+            padding: 0.58rem 0.9rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+            transition: all 120ms ease;
+            cursor: pointer;
+      }
+
+      .admin-btn-primary {
+            background: var(--color-brand-700);
+            color: white;
+      }
+
+      .admin-btn-primary:hover {
+            background: var(--color-brand-800);
+      }
+
+      .admin-btn-secondary {
+            background: white;
+            border-color: #cbd5e1;
+            color: var(--color-text-700);
+      }
+
+      .admin-btn-secondary:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+      }
+
+      .admin-btn-danger {
+            background: var(--color-danger-600);
+            color: white;
+      }
+
+      .admin-btn-danger:hover {
+            background: #b91c1c;
+      }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import education from '../../../assets/edu.png';
 import { LiaUserGraduateSolid, LiaUniversitySolid } from 'react-icons/lia';
 
@@ -25,7 +26,14 @@ const Education = () => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-10 p-6 md:p-12">
       {/* Image Section */}
-      <div className="w-full md:w-1/2 flex justify-center">
+      < Helmet>
+        <title>Koshish welfare</title>
+        <meta name="description" content="Education is the foundation for a better tomorrow. We strive to empower students with the knowledge and confidence they need to transform their lives and create impact in society." />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="canonical" href="https://www.koshishwelfare.in/" />
+        <meta name="keywords" content="Koshish, Education, Empowerment, Knowledge, Society" />
+      </Helmet>
+      <div className="w-full md:w-1/2 hidden md:block  justify-center">
         <img
           src={education}
           alt="Education Illustration"

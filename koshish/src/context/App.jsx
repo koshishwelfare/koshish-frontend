@@ -1,10 +1,9 @@
 
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import getHeader from "../utils/App/home/getHeader";
-import {getTopmentor,getCoOrdinator} from '../utils/App/home/getTopmentor'
+import {getTopmentor,getCoOrdinator,getAllMentor,getAllAlumni,getAllFaculty,SearchMembers} from "../utils/App/mentor/getAllMentor";
 import {getEventByID, getHomeEvent,getNewEvent,getPastEvent}  from '../utils/App/Events/getAllEvents'
 import getTestimorals from "../utils/App/home/getTestimorals";
-import {getAllMentor,getAllAlumni,getAllFaculty,SearchMembers} from "../utils/App/mentor/getAllMentor";
 import contactus from "../utils/App/contactus";
 import getmyMentor from "../utils/App/mentor/getMentor";
 import {getAllMemories,getAllNews,getGalleryById} from '../utils/App/Gallery/gallary'
@@ -36,68 +35,68 @@ const  AppContextProvider = (props) => {
  const [newspaper, setNewsPaper] = useState([]);
  const [galleryById, setGalleryById] = useState({});
  const backendURL = import.meta.env.VITE_BACKEND_URL
-const handleHeader = ()=>{
+const handleHeader = useCallback(()=>{
   getHeader(backendURL, setHeaderData)
-}
-const handleTopMentor = ()=>{
+}, [backendURL])
+const handleTopMentor = useCallback(()=>{
   getTopmentor(backendURL,setTopMentor)
-}
-const handleCoOrdinator = ()=>{
+}, [backendURL])
+const handleCoOrdinator = useCallback(()=>{
   getCoOrdinator(backendURL,setCoOrdi)
-}
-const handleNewEvent = ()=>{
-  getNewEvent(backendURL,setNewEvent)
-}
-const handlePastEvent = ()=>{
- getPastEvent(backendURL,setPastEvent)
-}
-const handleHomeEvent = ()=>{
+}, [backendURL])
+const handleNewEvent = useCallback((options = {})=>{
+  getNewEvent(backendURL,setNewEvent, options)
+}, [backendURL])
+const handlePastEvent = useCallback((options = {})=>{
+ getPastEvent(backendURL,setPastEvent, options)
+}, [backendURL])
+const handleHomeEvent = useCallback(()=>{
   getHomeEvent(backendURL,setHomeEvent)
-}
-const handleIDEvent = (id)=>{
+}, [backendURL])
+const handleIDEvent = useCallback((id)=>{
   getEventByID(backendURL,setIdEvent,id)
-}
-const handelTestimorals =()=>{
+}, [backendURL])
+const handelTestimorals = useCallback(()=>{
   getTestimorals(backendURL,setTestimorals)
-}
-const handelgetAllMentor =()=>{
+}, [backendURL])
+const handelgetAllMentor = useCallback(()=>{
   getAllMentor(backendURL,setAllMentor)
-}
-const handelgetAllAlumni =()=>{
+}, [backendURL])
+const handelgetAllAlumni = useCallback(()=>{
   getAllAlumni(backendURL,setAllAlumni)
-}
-const handelgetAllFaculty =()=>{
+}, [backendURL])
+const handelgetAllFaculty = useCallback(()=>{
   getAllFaculty(backendURL,setAllFuculty)
-}
-const handelSearchMember =(name)=>{
+}, [backendURL])
+const handelSearchMember = useCallback((name)=>{
   SearchMembers(backendURL,setSearchMember,name)
-}
-const handelgetmyMentor =(id)=>{
+}, [backendURL])
+const handelgetmyMentor = useCallback((id)=>{
    console.log("_id: ",id);
   getmyMentor(backendURL,setmyMentor,id)
-}
-const handleContactus = (data)=>{
+}, [backendURL])
+const handleContactus = useCallback((data)=>{
   contactus(backendURL, data);
-}
+}, [backendURL])
 
-const handleNewAnnouncement = ()=>{
-  getNewAnnouncement(backendURL,setnewAnnouncement);
-}
-const handlePastAnnouncement = ()=>{
-  getpastAnnouncement(backendURL,setPastAnnouncement);
-}
-const handlemyAnnouncement = (id)=>{
+const handleNewAnnouncement = useCallback((options = {})=>{
+  getNewAnnouncement(backendURL,setnewAnnouncement, options);
+}, [backendURL])
+const handlePastAnnouncement = useCallback((options = {})=>{
+  getpastAnnouncement(backendURL,setPastAnnouncement, options);
+}, [backendURL])
+const handlemyAnnouncement = useCallback((id)=>{
   getmyAnnouncement(backendURL,setmyAnnouncement,id);
-}
-const handleMemories = ()=>{
-  getAllMemories(backendURL,setMemories);
-}
-const handleNewsPaper = ()=>{
-  getAllNews(backendURL,setNewsPaper);
-}
-const handleGallaryById = (id)=>{
+}, [backendURL])
+const handleMemories = useCallback((options = {})=>{
+  getAllMemories(backendURL,setMemories, options);
+}, [backendURL])
+const handleNewsPaper = useCallback((options = {})=>{
+  getAllNews(backendURL,setNewsPaper, options);
+}, [backendURL])
+const handleGallaryById = useCallback((id)=>{
   getGalleryById(backendURL,setGalleryById,id);
-}
+}, [backendURL])
 const value = {
       docuTitle, setDocuTitle,
       headerData,setHeaderData ,handleHeader,

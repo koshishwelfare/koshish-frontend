@@ -2,11 +2,12 @@ import axios from 'axios';
 import {toast} from 'react-toastify'
 const AddHeader = async (backendURL, formdata, cirToken) => {
     try {
-        console.log("backendURL", backendURL, cirToken)
-        formdata.forEach((value,key)=>{
-            console.log (key ," : ", value,"\n");
-          })
-        const {data} = await axios.post(backendURL+'/api/cocirculer/header/add', formdata,{headers:{authCociculertoken:cirToken}} )
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.post(backendURL+'/api/cocirculer/header/add', formdata, config)
        if (data.success) {
             toast.success(data.message);
        }
@@ -20,8 +21,12 @@ const AddHeader = async (backendURL, formdata, cirToken) => {
 }
 const getAllHeader = async (backendURL, setHeader, cirToken) => {
     try {
-        
-        const {data} = await axios.get(backendURL+'/api/cocirculer/header/all',{headers:{authCociculertoken:cirToken}} )
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.get(backendURL+'/api/cocirculer/header/all', config)
        if (data.success) {
             setHeader(data.data)
             toast.success(data.message);
@@ -36,8 +41,12 @@ const getAllHeader = async (backendURL, setHeader, cirToken) => {
 }
 const hideHeaderHeader = async (backendURL,id,cirToken) => {
     try {
-        
-        const {data} = await axios.patch(backendURL+`/api/cocirculer/header/hide/${id}`,{},{headers:{authCociculertoken:cirToken}} )
+        const hasJwt = Boolean(cirToken && cirToken !== '__COOKIE_AUTH__');
+        const config = {
+            withCredentials: true,
+            headers: hasJwt ? { authCociculertoken: cirToken } : {}
+        };
+        const {data} = await axios.patch(backendURL+`/api/cocirculer/header/hide/${id}`,{}, config)
        if (data.success) {
            
             toast.success(data.message);

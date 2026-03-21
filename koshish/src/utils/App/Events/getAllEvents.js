@@ -1,8 +1,32 @@
 import axios from 'axios'
 import {toast} from 'react-toastify'
-const getHomeEvent = async (backendURL,setHomeEvent) => {
+
+const buildQueryParams = (options = {}) => {
+  const params = {
+    page: 1,
+    limit: 20,
+    ...options
+  };
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      delete params[key];
+    }
+  });
+  return params;
+};
+
+const getHomeEvent = async (backendURL,setHomeEvent,options = {}) => {
   try {
-     const {data} = await axios.get(backendURL + '/api/app/events')
+     const {data} = await axios.get(backendURL + '/api/app/events', {
+      params: buildQueryParams({
+        isTop: true,
+        page: 1,
+        limit: 4,
+        sortBy: 'startdate',
+        sortOrder: 'desc',
+        ...options
+      })
+     })
      if (data.success && data.data.length !=0) {
         setHomeEvent(data.data)
       //   toast.success(data.message)
@@ -18,9 +42,14 @@ const getHomeEvent = async (backendURL,setHomeEvent) => {
     toast.error(error.message);
   }
 }
-const getNewEvent = async (backendURL,setHomeEvent) => {
+const getNewEvent = async (backendURL,setHomeEvent,options = {}) => {
     try {
-       const {data} = await axios.get(backendURL + '/api/app/events/new')
+       const {data} = await axios.get(backendURL + '/api/app/events', {
+        params: buildQueryParams({
+          isActive: true,
+          ...options
+        })
+       })
        if (data.success) {
          if(data.data.length==0) {
             setHomeEvent("NODATA")
@@ -35,9 +64,14 @@ const getNewEvent = async (backendURL,setHomeEvent) => {
       toast.error(error.message);
     }
   }
-  const getPastEvent = async (backendURL,setHomeEvent) => {
+  const getPastEvent = async (backendURL,setHomeEvent,options = {}) => {
     try {
-       const {data} = await axios.get(backendURL + '/api/app/events/past')
+       const {data} = await axios.get(backendURL + '/api/app/events', {
+        params: buildQueryParams({
+          isActive: false,
+          ...options
+        })
+       })
        if (data.success) {
            if(data.data.length==0) {
             setHomeEvent("NODATA")
