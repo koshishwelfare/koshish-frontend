@@ -56,11 +56,11 @@ const Event = () => {
                 cardData =="NODATA" ? <NoData/>
                 
                 :
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 px-4 sm:px-6 lg:px-8 cursor-pointer">
+                <div className="grid grid-cols-1 gap-4 px-2 sm:grid-cols-2 sm:px-4 lg:grid-cols-4 lg:gap-6 lg:px-0">
                 {cardData
                   .slice(-4)
                   .map((item) => (
-                    <EventCard event={item}  />
+                    <EventCard key={item._id} event={item}  />
                   ))} </div> }
              </div>
               }

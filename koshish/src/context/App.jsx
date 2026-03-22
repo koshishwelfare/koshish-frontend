@@ -2,6 +2,8 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import getHeader from "../utils/App/home/getHeader";
 import {getTopmentor,getCoOrdinator,getAllMentor,getAllAlumni,getAllFaculty,SearchMembers} from "../utils/App/mentor/getAllMentor";
+import {getCoCircularMembers} from "../utils/App/mentor/getCoCircular";
+import { getCollaboratorOrganizations } from "../utils/App/mentor/getCollaborators";
 import {getEventByID, getHomeEvent,getNewEvent,getPastEvent}  from '../utils/App/Events/getAllEvents'
 import getTestimorals from "../utils/App/home/getTestimorals";
 import contactus from "../utils/App/contactus";
@@ -16,21 +18,23 @@ const  AppContextProvider = (props) => {
   document.title = docuTitle
  },[docuTitle])
  const [headerData,setHeaderData ] = useState([]);
- const [TopMentor,setTopMentor ] = useState([]);
- const [coOrdi,setCoOrdi] = useState({});
+ const [topMentor, setTopMentor] = useState([]);
+ const [coordinator, setCoordinator] = useState({});
  const [homeEvent, setHomeEvent] = useState([])
  const [newEvent, setNewEvent] = useState([])
  const [pastEvent, setPastEvent] = useState([])
  const [idEvent, setIdEvent] = useState({})
  const [testimorals, setTestimorals] = useState([]);
  const [allMentor, setAllMentor] = useState([]);
- const [allFuclty, setAllFuculty] = useState([]);
+ const [allFaculty, setAllFaculty] = useState([]);
+ const [coCircularMembers, setCoCircularMembers] = useState([]);
+ const [collaboratorOrganizations, setCollaboratorOrganizations] = useState([]);
  const [searchMember, setSearchMember] = useState([]);
  const [allAlumni, setAllAlumni] = useState([]);
- const [myMentor, setmyMentor] = useState([]);
- const [newAnnouncement, setnewAnnouncement] = useState([]);
+ const [myMentor, setMyMentor] = useState([]);
+ const [newAnnouncement, setNewAnnouncement] = useState([]);
  const [pastAnnouncement, setPastAnnouncement] = useState([]);
- const [myAnnouncement, setmyAnnouncement] = useState({});
+ const [myAnnouncement, setMyAnnouncement] = useState({});
  const [memories, setMemories] = useState([]);
  const [newspaper, setNewsPaper] = useState([]);
  const [galleryById, setGalleryById] = useState({});
@@ -42,7 +46,7 @@ const handleTopMentor = useCallback(()=>{
   getTopmentor(backendURL,setTopMentor)
 }, [backendURL])
 const handleCoOrdinator = useCallback(()=>{
-  getCoOrdinator(backendURL,setCoOrdi)
+  getCoOrdinator(backendURL, setCoordinator)
 }, [backendURL])
 const handleNewEvent = useCallback((options = {})=>{
   getNewEvent(backendURL,setNewEvent, options)
@@ -56,37 +60,42 @@ const handleHomeEvent = useCallback(()=>{
 const handleIDEvent = useCallback((id)=>{
   getEventByID(backendURL,setIdEvent,id)
 }, [backendURL])
-const handelTestimorals = useCallback(()=>{
+const handleTestimonials = useCallback(()=>{
   getTestimorals(backendURL,setTestimorals)
 }, [backendURL])
-const handelgetAllMentor = useCallback(()=>{
-  getAllMentor(backendURL,setAllMentor)
+const handleGetAllMentor = useCallback((options = {})=>{
+  getAllMentor(backendURL, setAllMentor, options)
 }, [backendURL])
-const handelgetAllAlumni = useCallback(()=>{
-  getAllAlumni(backendURL,setAllAlumni)
+const handleGetAllAlumni = useCallback((options = {})=>{
+  getAllAlumni(backendURL, setAllAlumni, options)
 }, [backendURL])
-const handelgetAllFaculty = useCallback(()=>{
-  getAllFaculty(backendURL,setAllFuculty)
+const handleGetAllFaculty = useCallback((options = {})=>{
+  getAllFaculty(backendURL, setAllFaculty, options)
 }, [backendURL])
-const handelSearchMember = useCallback((name)=>{
-  SearchMembers(backendURL,setSearchMember,name)
+const handleGetCoCircularMembers = useCallback((options = {})=>{
+  getCoCircularMembers(backendURL, setCoCircularMembers, options)
 }, [backendURL])
-const handelgetmyMentor = useCallback((id)=>{
-   console.log("_id: ",id);
-  getmyMentor(backendURL,setmyMentor,id)
+const handleGetCollaboratorOrganizations = useCallback((options = {})=>{
+  getCollaboratorOrganizations(backendURL, setCollaboratorOrganizations, options)
+}, [backendURL])
+const handleSearchMember = useCallback((name, options = {})=>{
+  SearchMembers(backendURL, setSearchMember, name, options)
+}, [backendURL])
+const handleGetMyMentor = useCallback((id)=>{
+  getmyMentor(backendURL, setMyMentor, id)
 }, [backendURL])
 const handleContactus = useCallback((data)=>{
   contactus(backendURL, data);
 }, [backendURL])
 
 const handleNewAnnouncement = useCallback((options = {})=>{
-  getNewAnnouncement(backendURL,setnewAnnouncement, options);
+  getNewAnnouncement(backendURL, setNewAnnouncement, options);
 }, [backendURL])
 const handlePastAnnouncement = useCallback((options = {})=>{
   getpastAnnouncement(backendURL,setPastAnnouncement, options);
 }, [backendURL])
 const handlemyAnnouncement = useCallback((id)=>{
-  getmyAnnouncement(backendURL,setmyAnnouncement,id);
+  getmyAnnouncement(backendURL, setMyAnnouncement, id);
 }, [backendURL])
 const handleMemories = useCallback((options = {})=>{
   getAllMemories(backendURL,setMemories, options);
@@ -100,22 +109,40 @@ const handleGallaryById = useCallback((id)=>{
 const value = {
       docuTitle, setDocuTitle,
       headerData,setHeaderData ,handleHeader,
-      TopMentor,setTopMentor,handleTopMentor,
-      coOrdi,setCoOrdi,handleCoOrdinator,
+  topMentor, setTopMentor, handleTopMentor,
+  TopMentor: topMentor,
+  coordinator, setCoordinator, handleCoOrdinator,
+  coOrdi: coordinator,
+  setCoOrdi: setCoordinator,
       homeEvent, setHomeEvent,handleHomeEvent,
       newEvent, setNewEvent,handleNewEvent,
       pastEvent, setPastEvent,handlePastEvent,
       idEvent, setIdEvent,handleIDEvent,
-      testimorals, setTestimorals,handelTestimorals,
-      allMentor, setAllMentor,handelgetAllMentor,
+  testimorals, setTestimorals, handleTestimonials,
+  handelTestimorals: handleTestimonials,
+  allMentor, setAllMentor, handleGetAllMentor,
+  handelgetAllMentor: handleGetAllMentor,
       handleContactus,
-      allFuclty, setAllFuculty,handelgetAllFaculty,
-      allAlumni, setAllAlumni,  handelgetAllAlumni,
-      searchMember, setSearchMember,handelSearchMember,
-      myMentor, setmyMentor,handelgetmyMentor,
-      newAnnouncement, setnewAnnouncement,handleNewAnnouncement,
+  allFaculty, setAllFaculty, handleGetAllFaculty,
+  allFuclty: allFaculty,
+  setAllFuculty: setAllFaculty,
+  handelgetAllFaculty: handleGetAllFaculty,
+  coCircularMembers, setCoCircularMembers, handleGetCoCircularMembers,
+  coCircularData: coCircularMembers,
+  handelGetCoCircularMembers: handleGetCoCircularMembers,
+  collaboratorOrganizations, setCollaboratorOrganizations, handleGetCollaboratorOrganizations,
+  allAlumni, setAllAlumni, handleGetAllAlumni,
+  handelgetAllAlumni: handleGetAllAlumni,
+  searchMember, setSearchMember, handleSearchMember,
+  handelSearchMember: handleSearchMember,
+  myMentor, setMyMentor, handleGetMyMentor,
+  setmyMentor: setMyMentor,
+  handelgetmyMentor: handleGetMyMentor,
+  newAnnouncement, setNewAnnouncement, handleNewAnnouncement,
+  setnewAnnouncement: setNewAnnouncement,
       pastAnnouncement, setPastAnnouncement,handlePastAnnouncement,
-      myAnnouncement, setmyAnnouncement,handlemyAnnouncement,
+  myAnnouncement, setMyAnnouncement, handlemyAnnouncement,
+  setmyAnnouncement: setMyAnnouncement,
     // gallery
     memories, setMemories,handleMemories,
     newspaper, setNewsPaper,handleNewsPaper,

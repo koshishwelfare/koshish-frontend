@@ -10,8 +10,10 @@ import {
     updateStudentProfile
 } from "../utils/student/auth";
 import {
+    studentGetAssignments,
     studentGetAnswers,
     studentGetAttendance,
+    studentGetDashboard,
     studentGetLeaderboard,
     studentGetTestById,
     studentListTests,
@@ -28,7 +30,40 @@ const  StudentContextProvider = (props) => {
         const [studentAnswerSheet, setStudentAnswerSheet] = useState(null)
         const [studentLeaderboard, setStudentLeaderboard] = useState([])
         const [studentAttendance, setStudentAttendance] = useState([])
+        const [studentDashboard, setStudentDashboard] = useState(null)
+        const [studentAssignments, setStudentAssignments] = useState([])
         const backendURL= import.meta.env.VITE_BACKEND_URL
+
+        const getErrorMessage = (error) =>
+            error?.response?.data?.message || error?.message || "Something went wrong"
+
+        const runStudentRequest = async (request, options = {}) => {
+            const {
+                setLoading = false,
+                successToast = false,
+                onSuccess,
+                fallback = null
+            } = options
+
+            try {
+                if (setLoading) setStudentLoading(true)
+
+                const data = await request()
+                if (!data?.success) {
+                    toast.error(data?.message || "Request failed")
+                    return fallback
+                }
+
+                if (typeof onSuccess === "function") onSuccess(data)
+                if (successToast && data.message) toast.success(data.message)
+                return data
+            } catch (error) {
+                toast.error(getErrorMessage(error))
+                return fallback
+            } finally {
+                if (setLoading) setStudentLoading(false)
+            }
+        }
 
         useEffect(() => {
             if (stuToken) {
@@ -39,82 +74,63 @@ const  StudentContextProvider = (props) => {
         }, [stuToken])
 
         const studentRegister = async (payload) => {
-            try {
-                setStudentLoading(true)
-                const data = await registerStudent(backendURL, payload)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return false
+            const data = await runStudentRequest(
+                () => registerStudent(backendURL, payload),
+                {
+                    setLoading: true,
+                    successToast: true,
+                    fallback: false,
+                    onSuccess: ({ token, student }) => {
+                        setStuToken(token)
+                        setStudentProfile(student)
+                    }
                 }
+            )
 
-                setStuToken(data.token)
-                setStudentProfile(data.student)
-                toast.success(data.message)
-                return true
-            } catch (error) {
-                toast.error(error.message)
-                return false
-            } finally {
-                setStudentLoading(false)
-            }
+            return Boolean(data)
         }
 
         const studentLogin = async (payload) => {
-            try {
-                setStudentLoading(true)
-                const data = await loginStudent(backendURL, payload)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return false
+            const data = await runStudentRequest(
+                () => loginStudent(backendURL, payload),
+                {
+                    setLoading: true,
+                    successToast: true,
+                    fallback: false,
+                    onSuccess: ({ token, student }) => {
+                        setStuToken(token)
+                        setStudentProfile(student)
+                    }
                 }
+            )
 
-                setStuToken(data.token)
-                setStudentProfile(data.student)
-                toast.success(data.message)
-                return true
-            } catch (error) {
-                toast.error(error.message)
-                return false
-            } finally {
-                setStudentLoading(false)
-            }
+            return Boolean(data)
         }
 
         const studentFetchProfile = async () => {
             if (!stuToken) return;
-            try {
-                setStudentLoading(true)
-                const data = await getStudentProfile(backendURL, stuToken)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return;
+            await runStudentRequest(
+                () => getStudentProfile(backendURL, stuToken),
+                {
+                    setLoading: true,
+                    onSuccess: ({ student }) => setStudentProfile(student)
                 }
-                setStudentProfile(data.student)
-            } catch (error) {
-                toast.error(error.message)
-            } finally {
-                setStudentLoading(false)
-            }
+            )
         }
 
         const studentUpdateProfile = async (payload) => {
             if (!stuToken) return false;
-            try {
-                setStudentLoading(true)
-                const data = await updateStudentProfile(backendURL, stuToken, payload)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return false
+            const data = await runStudentRequest(
+                () => updateStudentProfile(backendURL, stuToken, payload),
+                {
+                    setLoading: true,
+                    successToast: true,
+                    fallback: false,
+                    onSuccess: ({ student }) => setStudentProfile(student)
                 }
-                setStudentProfile(data.student)
-                toast.success(data.message)
-                return true
-            } catch (error) {
-                toast.error(error.message)
-                return false
-            } finally {
-                setStudentLoading(false)
-            }
+            )
+
+            return Boolean(data)
         }
 
         const studentLogout = () => {
@@ -125,107 +141,97 @@ const  StudentContextProvider = (props) => {
         }
 
         const studentRecoverCredentials = async (payload) => {
-            try {
-                setStudentLoading(true)
-                const data = await recoverStudentCredentials(backendURL, payload)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return null
+            return runStudentRequest(
+                () => recoverStudentCredentials(backendURL, payload),
+                {
+                    setLoading: true,
+                    successToast: true,
+                    fallback: null
                 }
-                toast.success(data.message)
-                return data
-            } catch (error) {
-                toast.error(error.message)
-                return null
-            } finally {
-                setStudentLoading(false)
-            }
+            )
         }
 
         const studentFetchTests = async (options = {}) => {
             if (!stuToken) return;
-            try {
-                const data = await studentListTests(backendURL, stuToken, options)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return
+            await runStudentRequest(
+                () => studentListTests(backendURL, stuToken, options),
+                {
+                    onSuccess: ({ data }) => setStudentTests(data || [])
                 }
-                setStudentTests(data.data || [])
-            } catch (error) {
-                toast.error(error.message)
-            }
+            )
         }
 
         const studentFetchTestById = async (testId) => {
             if (!stuToken || !testId) return;
-            try {
-                const data = await studentGetTestById(backendURL, stuToken, testId)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return
+            await runStudentRequest(
+                () => studentGetTestById(backendURL, stuToken, testId),
+                {
+                    onSuccess: ({ data }) => setStudentCurrentTest(data)
                 }
-                setStudentCurrentTest(data.data)
-            } catch (error) {
-                toast.error(error.message)
-            }
+            )
         }
 
         const studentSubmitCurrentTest = async (testId, answers) => {
             if (!stuToken || !testId) return false;
-            try {
-                const data = await studentSubmitTest(backendURL, stuToken, testId, answers)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return false
+            const data = await runStudentRequest(
+                () => studentSubmitTest(backendURL, stuToken, testId, answers),
+                {
+                    successToast: true,
+                    fallback: false
                 }
-                toast.success(data.message)
-                return true
-            } catch (error) {
-                toast.error(error.message)
-                return false
-            }
+            )
+
+            return Boolean(data)
         }
 
         const studentFetchAnswers = async (testId) => {
             if (!stuToken || !testId) return;
-            try {
-                const data = await studentGetAnswers(backendURL, stuToken, testId)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return
+            await runStudentRequest(
+                () => studentGetAnswers(backendURL, stuToken, testId),
+                {
+                    onSuccess: ({ data }) => setStudentAnswerSheet(data)
                 }
-                setStudentAnswerSheet(data.data)
-            } catch (error) {
-                toast.error(error.message)
-            }
+            )
         }
 
         const studentFetchLeaderboard = async (testId) => {
             if (!stuToken || !testId) return;
-            try {
-                const data = await studentGetLeaderboard(backendURL, stuToken, testId)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return
+            await runStudentRequest(
+                () => studentGetLeaderboard(backendURL, stuToken, testId),
+                {
+                    onSuccess: ({ data }) => setStudentLeaderboard(data || [])
                 }
-                setStudentLeaderboard(data.data || [])
-            } catch (error) {
-                toast.error(error.message)
-            }
+            )
         }
 
         const studentFetchAttendance = async () => {
             if (!stuToken) return;
-            try {
-                const data = await studentGetAttendance(backendURL, stuToken)
-                if (!data.success) {
-                    toast.error(data.message)
-                    return
+            await runStudentRequest(
+                () => studentGetAttendance(backendURL, stuToken),
+                {
+                    onSuccess: ({ data }) => setStudentAttendance(data || [])
                 }
-                setStudentAttendance(data.data || [])
-            } catch (error) {
-                toast.error(error.message)
-            }
+            )
+        }
+
+        const studentFetchDashboard = async () => {
+            if (!stuToken) return;
+            await runStudentRequest(
+                () => studentGetDashboard(backendURL, stuToken),
+                {
+                    onSuccess: ({ data }) => setStudentDashboard(data || null)
+                }
+            )
+        }
+
+        const studentFetchAssignments = async () => {
+            if (!stuToken) return;
+            await runStudentRequest(
+                () => studentGetAssignments(backendURL, stuToken),
+                {
+                    onSuccess: ({ data }) => setStudentAssignments(data || [])
+                }
+            )
         }
 
 const value = {
@@ -243,12 +249,16 @@ const value = {
         studentAnswerSheet,
         studentLeaderboard,
         studentAttendance,
+        studentDashboard,
+        studentAssignments,
         studentFetchTests,
         studentFetchTestById,
         studentSubmitCurrentTest,
         studentFetchAnswers,
         studentFetchLeaderboard,
-        studentFetchAttendance
+        studentFetchAttendance,
+        studentFetchDashboard,
+        studentFetchAssignments
  }
 return (
    

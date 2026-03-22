@@ -60,7 +60,7 @@ const Certification = () => {
       <h2 className='text-2xl md:text-4xl text-blue10 font-semibold text-center mb-6'>Verified by Koshish Welfare</h2>
       <p className='text-lg md:text-xl text-center mb-6 w-max-5xl'>
       This certificate has been digitally verified and issued by the Koshish Welfare to acknowledge the authentic contributions and verified mentorship of the individual.</p>
-      {cerificate.isCertify ? (
+      {cerificate && cerificate._id ? (
         <>
           {/* Certificate Display */}
           <div className=" w-[96%] hidden md:flex justify-center">

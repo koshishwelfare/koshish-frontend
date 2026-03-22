@@ -15,6 +15,11 @@ const buildQueryParams = (options = {}) => {
     return params;
 };
 
+const normalizeListPayload = (payload) => ({
+    data: Array.isArray(payload?.data) ? payload.data : [],
+    pagination: payload?.pagination || null
+});
+
 const getNewAnnouncement = async(backendURL,setAllAnnouncement,options = {}) => {
     try {
        const {data} = await axios.get(backendURL+'/api/app/announcement', {
@@ -23,14 +28,12 @@ const getNewAnnouncement = async(backendURL,setAllAnnouncement,options = {}) => 
             ...options
         })
        }); 
-       if(data.success && data.data.length != 0){
-           setAllAnnouncement(data.data)
-           toast.success(data.message)
+       if(data.success){
+           setAllAnnouncement(normalizeListPayload(data))
        }
-       else if(data.data.length ==0) toast.info(data.message)
        else  toast.error(data.message)
     } catch (error) {
-    //    console.log(error)
+       setAllAnnouncement('5xx')
        toast.error(error.message);
     }
 }
@@ -43,12 +46,11 @@ const getpastAnnouncement = async(backendURL,setAllAnnouncement,options = {}) =>
         })
        }); 
        if(data.success){
-           setAllAnnouncement(data.data)
-           toast.success(data.message)
+           setAllAnnouncement(normalizeListPayload(data))
        }
        else  toast.error(data.message)
     } catch (error) {
-    //    console.log(error)
+       setAllAnnouncement('5xx')
        toast.error(error.message);
     }
 }
@@ -57,7 +59,6 @@ const getmyAnnouncement = async(backendURL,setmyAnnouncement,id) => {
        const {data} = await axios.post(backendURL+'/api/app/announcement/id',{id} ); 
        if(data.success){
            setmyAnnouncement(data.data)
-           toast.success(data.message)
        }
        else  toast.error(data.message)
     } catch (error) {

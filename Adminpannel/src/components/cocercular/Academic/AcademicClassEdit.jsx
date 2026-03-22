@@ -21,10 +21,29 @@ const AcademicClassEdit = () => {
     section: 'A',
     sessionId: '',
     mentorId: '',
+    teacherIds: [],
     isActive: true
   });
+  const [mentorToAdd, setMentorToAdd] = useState('');
   const [classData, setClassData] = useState(null);
   const [errors, setErrors] = useState({});
+
+  const addMentorTag = () => {
+    if (!mentorToAdd) return;
+    setForm((prev) => ({
+      ...prev,
+      teacherIds: [...new Set([...(prev.teacherIds || []), mentorToAdd, prev.mentorId].filter(Boolean))]
+    }));
+    setMentorToAdd('');
+  };
+
+  const removeMentorTag = (mentorId) => {
+    if (!mentorId || mentorId === form.mentorId) return;
+    setForm((prev) => ({
+      ...prev,
+      teacherIds: (prev.teacherIds || []).filter((id) => id !== mentorId)
+    }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -65,6 +84,10 @@ const AcademicClassEdit = () => {
           section: data.section || 'A',
           sessionId: data.sessionId?._id || '',
           mentorId: data.mentorId?._id || '',
+          teacherIds: [...new Set([
+            data.mentorId?._id || '',
+            ...((data.teacherIds || []).map((mentor) => mentor?._id || mentor))
+          ].filter(Boolean))],
           isActive: data.isActive !== false
         });
       }
@@ -77,7 +100,16 @@ const AcademicClassEdit = () => {
     if (!validateForm()) {
       return;
     }
-    const updated = await handleUpdateAcademicClassById(id, form);
+    const payload = {
+      name: String(form.name || '').trim(),
+      grade: String(form.grade || '').trim(),
+      section: String(form.section || 'A').trim().toUpperCase(),
+      sessionId: String(form.sessionId || '').trim(),
+      mentorId: String(form.mentorId || '').trim(),
+      teacherIds: [...new Set([String(form.mentorId || '').trim(), ...(form.teacherIds || []).map((tid) => String(tid).trim())].filter(Boolean))],
+      isActive: form.isActive
+    };
+    const updated = await handleUpdateAcademicClassById(id, payload);
     if (updated) {
       navigate(`/academic/classes/view/${id}`);
     }
@@ -145,7 +177,12 @@ const AcademicClassEdit = () => {
             className={`w-full rounded border px-3 py-2 ${errors.mentorId ? 'border-red-500 bg-red-50' : ''}`} 
             value={form.mentorId} 
             onChange={(e) => {
-              setForm((p) => ({ ...p, mentorId: e.target.value }));
+              const mentorId = e.target.value;
+              setForm((p) => ({
+                ...p,
+                mentorId,
+                teacherIds: [...new Set([mentorId, ...(p.teacherIds || [])].filter(Boolean))]
+              }));
               if (errors.mentorId) setErrors((p) => ({ ...p, mentorId: '' }));
             }} 
             required
@@ -156,6 +193,43 @@ const AcademicClassEdit = () => {
             ))}
           </select>
           {errors.mentorId && <p className="mt-1 text-xs text-red-600">{errors.mentorId}</p>}
+        </div>
+
+        <div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto]">
+            <select
+              className="w-full rounded border px-3 py-2"
+              value={mentorToAdd}
+              onChange={(e) => setMentorToAdd(e.target.value)}
+            >
+              <option value="">Select mentor to assign</option>
+              {academicMentors.map((mentor) => (
+                <option key={mentor._id} value={mentor._id}>{mentor.name} ({mentor.email})</option>
+              ))}
+            </select>
+            <button type="button" className="rounded bg-slate-800 px-3 py-2 text-sm text-white" onClick={addMentorTag}>
+              Add
+            </button>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(form.teacherIds || []).map((mentorId) => {
+              const mentor = academicMentors.find((m) => String(m._id) === String(mentorId));
+              const label = mentor ? `${mentor.name}` : mentorId;
+              const isPrimary = String(form.mentorId) === String(mentorId);
+              return (
+                <span key={mentorId} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${isPrimary ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>
+                  {label}
+                  {isPrimary ? ' (Primary)' : ''}
+                  {!isPrimary && (
+                    <button type="button" className="ml-1 rounded px-1 text-slate-500 hover:bg-slate-200" onClick={() => removeMentorTag(mentorId)}>
+                      x
+                    </button>
+                  )}
+                </span>
+              );
+            })}
+          </div>
+          <p className="mt-1 text-xs text-slate-500">Assign multiple mentors. Primary mentor is always included.</p>
         </div>
 
         <select className="w-full rounded border px-3 py-2" value={form.isActive ? 'active' : 'inactive'} onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.value === 'active' }))}>

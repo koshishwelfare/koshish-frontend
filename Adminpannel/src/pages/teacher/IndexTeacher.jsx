@@ -6,6 +6,17 @@ import StudentAttendancePage from './StudentAttendancePage';
 import SelfAttendancePage from './SelfAttendancePage';
 import TestListingPage from './TestListingPage';
 import CreateTestPage from './CreateTestPage';
+import ClassCurriculumPage from './ClassCurriculumPage';
+import { toast } from 'react-toastify';
+
+const initialStudentFormState = {
+  name: '',
+  username: '',
+  email: '',
+  phoneNumber: '',
+  classId: '',
+  sessionId: ''
+};
 
 const IndexTeacher = () => {
   const {
@@ -28,14 +39,7 @@ const IndexTeacher = () => {
   } = useContext(TeacherContext);
   const [activeView, setActiveView] = useState('tests-list');
   const [profileMode, setProfileMode] = useState('view');
-  const [studentForm, setStudentForm] = useState({
-    name: '',
-    username: '',
-    email: '',
-    phoneNumber: '',
-    classId: '',
-    sessionId: ''
-  });
+  const [studentForm, setStudentForm] = useState(initialStudentFormState);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [isStudentProfileModalOpen, setIsStudentProfileModalOpen] = useState(false);
   const [studentProfileLoading, setStudentProfileLoading] = useState(false);
@@ -212,19 +216,46 @@ const IndexTeacher = () => {
     }
   };
 
+  const resetStudentForm = () => {
+    setStudentForm(initialStudentFormState);
+  };
+
+  const openStudentModal = () => {
+    resetStudentForm();
+    setIsStudentModalOpen(true);
+  };
+
+  const closeStudentModal = () => {
+    setIsStudentModalOpen(false);
+    resetStudentForm();
+  };
+
   const submitStudent = async (e) => {
     e.preventDefault();
-    const created = await handleAddStudent(studentForm);
+    const payload = {
+      name: String(studentForm.name || '').trim(),
+      username: String(studentForm.username || '').trim().toLowerCase(),
+      email: String(studentForm.email || '').trim().toLowerCase(),
+      phoneNumber: String(studentForm.phoneNumber || '').trim(),
+      classId: String(studentForm.classId || '').trim(),
+      sessionId: String(studentForm.sessionId || '').trim()
+    };
+
+    if (!payload.name || !payload.email || !payload.phoneNumber || !payload.classId || !payload.sessionId) {
+      toast.error('Please fill all required fields before creating the student.');
+      return;
+    }
+
+    const selectedClass = filteredClassesForStudent.find((cls) => String(cls?._id || '') === payload.classId);
+    if (!selectedClass) {
+      toast.error('Selected class is not available for the chosen session. Please select again.');
+      setStudentForm((prev) => ({ ...prev, classId: '' }));
+      return;
+    }
+
+    const created = await handleAddStudent(payload);
     if (created) {
-      setStudentForm({
-        name: '',
-        username: '',
-        email: '',
-        phoneNumber: '',
-        classId: '',
-        sessionId: ''
-      });
-      setIsStudentModalOpen(false);
+      closeStudentModal();
       await loadStudentListing({ page: 1 });
     }
   };
@@ -317,6 +348,7 @@ const IndexTeacher = () => {
 
   const menuItems = [
     { key: 'profile', label: 'Profile' },
+    { key: 'curriculum', label: 'Class Management' },
     { key: 'tests-list', label: 'Test Listing' },
     { key: 'tests-create', label: 'Create Test' },
     { key: 'self-attendance', label: 'Self Attendance' },
@@ -545,6 +577,8 @@ const IndexTeacher = () => {
           </div>
         ) : activeView === 'tests-list' ? (
           <TestListingPage />
+        ) : activeView === 'curriculum' ? (
+          <ClassCurriculumPage />
         ) : activeView === 'tests-create' ? (
           <CreateTestPage onCreated={() => setActiveView('tests-list')} />
         ) : activeView === 'self-attendance' ? (
@@ -663,7 +697,7 @@ const IndexTeacher = () => {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white p-4 shadow">
               <h2 className="text-xl font-semibold">Student Listing</h2>
-              <button type="button" className="admin-btn admin-btn-primary" onClick={() => setIsStudentModalOpen(true)}>
+              <button type="button" className="admin-btn admin-btn-primary" onClick={openStudentModal}>
                 Add Student
               </button>
             </div>
@@ -848,7 +882,7 @@ const IndexTeacher = () => {
                       <p className="text-xs text-amber-700">No classes found for selected session.</p>
                     )}
                     <div className="flex justify-end gap-2 pt-2">
-                      <button type="button" className="rounded border px-3 py-1.5 text-sm" onClick={() => setIsStudentModalOpen(false)}>
+                      <button type="button" className="rounded border px-3 py-1.5 text-sm" onClick={closeStudentModal}>
                         Cancel
                       </button>
                       <button

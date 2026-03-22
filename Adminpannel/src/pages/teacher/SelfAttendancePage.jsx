@@ -5,13 +5,17 @@ const SelfAttendancePage = () => {
   const {
     teacherSelfAttendances,
     teacherClasses,
+    teacherClassCurriculum,
     handleMarkSelfAttendance,
     handleGetTeacherSelfAttendance,
-    handleGetTeacherClasses
+    handleGetTeacherClasses,
+    handleGetClassCurriculum
   } = useContext(TeacherContext);
 
   const [selfAttendanceForm, setSelfAttendanceForm] = useState({
     classId: '',
+    subjectId: '',
+    chapterId: '',
     date: new Date().toISOString().slice(0, 10),
     qrToken: '',
     latitude: '',
@@ -43,6 +47,20 @@ const SelfAttendancePage = () => {
     handleGetTeacherClasses();
     handleGetTeacherSelfAttendance();
   }, []);
+
+  useEffect(() => {
+    if (!isSelfAttendanceModalOpen || !selfAttendanceForm.classId) return;
+    handleGetClassCurriculum(selfAttendanceForm.classId);
+  }, [isSelfAttendanceModalOpen, selfAttendanceForm.classId]);
+
+  const classSubjects = useMemo(() => teacherClassCurriculum?.subjects || [], [teacherClassCurriculum]);
+
+  const selectedSubject = useMemo(
+    () => classSubjects.find((subject) => String(subject?._id || '') === String(selfAttendanceForm.subjectId || '')) || null,
+    [classSubjects, selfAttendanceForm.subjectId]
+  );
+
+  const subjectChapters = useMemo(() => selectedSubject?.chapters || [], [selectedSubject]);
 
   useEffect(() => {
     const supported = typeof window !== 'undefined' && 'BarcodeDetector' in window;
@@ -251,6 +269,8 @@ const SelfAttendancePage = () => {
             <tr className="bg-slate-100/80 text-left text-xs uppercase tracking-[0.08em] text-slate-500">
               <th className="px-4 py-3 font-bold">Date</th>
               <th className="px-4 py-3 font-bold">Class</th>
+                  <th className="px-4 py-3 font-bold">Subject</th>
+                  <th className="px-4 py-3 font-bold">Chapter</th>
               <th className="px-4 py-3 font-bold">Status</th>
               <th className="px-4 py-3 font-bold">Remarks</th>
               <th className="px-4 py-3 font-bold">Created</th>
@@ -261,6 +281,8 @@ const SelfAttendancePage = () => {
               <tr key={row._id} className="border-t border-slate-100 hover:bg-slate-50/70">
                 <td className="px-4 py-3 text-slate-700">{row.date || '-'}</td>
                 <td className="px-4 py-3 text-slate-700">{row.classId ? `${row.classId.name || ''} ${row.classId.section || ''}`.trim() : '-'}</td>
+                <td className="px-4 py-3 text-slate-700">{row.subjectName || '-'}</td>
+                <td className="px-4 py-3 text-slate-700">{row.chapterTitle || '-'}</td>
                 <td className="px-4 py-3 text-slate-700">{row.status || '-'}</td>
                 <td className="px-4 py-3 text-slate-700">{row.remarks || '-'}</td>
                 <td className="px-4 py-3 text-slate-700">{row.createdAt ? new Date(row.createdAt).toLocaleString() : '-'}</td>
@@ -268,7 +290,7 @@ const SelfAttendancePage = () => {
             ))}
             {!selfAttendanceListing.rows.length && (
               <tr>
-                <td className="px-4 py-8 text-center text-slate-500" colSpan={5}>No self attendance records found</td>
+                <td className="px-4 py-8 text-center text-slate-500" colSpan={7}>No self attendance records found</td>
               </tr>
             )}
           </tbody>
@@ -290,10 +312,32 @@ const SelfAttendancePage = () => {
           <div className="w-full max-w-lg rounded-lg bg-white p-5 shadow-xl">
             <h3 className="mb-3 text-lg font-semibold">Mark Self Attendance</h3>
             <form className="space-y-3" onSubmit={submitSelfAttendance}>
-              <select className="w-full border rounded px-3 py-2" value={selfAttendanceForm.classId} onChange={(e) => setSelfAttendanceForm((p) => ({ ...p, classId: e.target.value }))} required>
+              <select className="w-full border rounded px-3 py-2" value={selfAttendanceForm.classId} onChange={(e) => setSelfAttendanceForm((p) => ({ ...p, classId: e.target.value, subjectId: '', chapterId: '' }))} required>
                 <option value="">Select Class</option>
                 {teacherClasses.map((cls) => (
                   <option key={cls._id} value={cls._id}>{`${cls.name} - ${cls.grade}${cls.section ? ` ${cls.section}` : ''}`}</option>
+                ))}
+              </select>
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={selfAttendanceForm.subjectId}
+                onChange={(e) => setSelfAttendanceForm((p) => ({ ...p, subjectId: e.target.value, chapterId: '' }))}
+                disabled={!selfAttendanceForm.classId}
+              >
+                <option value="">Select Subject</option>
+                {classSubjects.map((subject) => (
+                  <option key={subject._id} value={subject._id}>{subject.name}</option>
+                ))}
+              </select>
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={selfAttendanceForm.chapterId}
+                onChange={(e) => setSelfAttendanceForm((p) => ({ ...p, chapterId: e.target.value }))}
+                disabled={!selfAttendanceForm.subjectId}
+              >
+                <option value="">Select Chapter</option>
+                {subjectChapters.map((chapter) => (
+                  <option key={chapter._id} value={chapter._id}>{chapter.title}</option>
                 ))}
               </select>
               <input className="w-full border rounded px-3 py-2" type="date" value={selfAttendanceForm.date} onChange={(e) => setSelfAttendanceForm((p) => ({ ...p, date: e.target.value }))} required />

@@ -7,7 +7,7 @@ const NewsCard = ({announcement}) => {
   return (
     <div 
               key={announcement._id} 
-              className="bg-green-100 rounded-xl shadow-lg overflow-hidden border border-gray-200 transition-transform duration-300 hover:shadow-2xl hover:-translate-y-2"
+              className="app-card overflow-hidden border border-emerald-100 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
               <Helmet>
                 <title>News - Koshish</title>
@@ -24,11 +24,11 @@ const NewsCard = ({announcement}) => {
                 alt={announcement.heading}
               />
               <div className="p-4">
-                <h2 className="text-xl font-semibold text-gray-900">{announcement.heading}</h2>
-                <p className="mt-2 text-gray-700 line-clamp-2">{announcement.announcement}</p>
-                <p className="mt-2 text-gray-500 text-sm">Date: {new Date(announcement.date).toDateString()}</p>
+                <h2 className="text-xl font-semibold text-slate-900">{announcement.heading}</h2>
+                <p className="mt-2 text-slate-700 line-clamp-2">{announcement.announcement}</p>
+                <p className="mt-2 text-slate-500 text-sm">Date: {new Date(announcement.date).toDateString()}</p>
                 {announcement.isAtive && (
-                  <span className="inline-block bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded mt-3">
+                  <span className="mt-3 inline-block rounded bg-emerald-500 px-2 py-1 text-xs font-semibold text-white">
                     Active
                   </span>
                 )}

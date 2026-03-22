@@ -86,6 +86,8 @@ const UpdateMentor = () => {
           <option value="mentor">Mentor</option>
           <option value="alumni">Alumni</option>
           <option value="sponsor">Sponsor</option>
+          <option value="visionary">Visionary</option>
+          <option value="cocurricular">Co-Curricular</option>
           <option value="collaborator">Collaborator</option>
         </select>
       </div>

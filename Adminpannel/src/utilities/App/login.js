@@ -84,4 +84,65 @@ else if (role === 'teacher') {
   }
 }
 
+const recoverCredentialsByRole = async (backendURL, role, payload = {}) => {
+    try {
+        if (role === 'teacher') {
+            const email = String(payload.email || '').trim().toLowerCase();
+            if (!email) {
+                toast.error('Teacher recovery requires email.');
+                return false;
+            }
+            const { data } = await axios.post(`${backendURL}/api/teacher/credentials/recover/teacher`, { email }, { withCredentials: true });
+            if (!data.success) {
+                toast.error(normalizeMessage(data, 'Teacher recovery failed'));
+                return false;
+            }
+            toast.success(normalizeMessage(data, 'Teacher credentials recovered'));
+            return true;
+        }
+
+        if (role === 'cocircular') {
+            const email = String(payload.email || '').trim().toLowerCase();
+            if (!email) {
+                toast.error('Co-curricular recovery requires email.');
+                return false;
+            }
+            const { data } = await axios.post(`${backendURL}/api/cocirculer/credentials/recover`, { email }, { withCredentials: true });
+            if (!data.success) {
+                toast.error(normalizeMessage(data, 'Co-curricular recovery failed'));
+                return false;
+            }
+            toast.success(normalizeMessage(data, 'Co-curricular credentials recovered'));
+            return true;
+        }
+
+        if (role === 'student') {
+            const email = String(payload.email || '').trim().toLowerCase();
+            const username = String(payload.username || '').trim().toLowerCase();
+            if (!email && !username) {
+                toast.error('Student recovery requires email or username.');
+                return false;
+            }
+            const { data } = await axios.post(
+                `${backendURL}/api/user/student/recover-credentials`,
+                { email, username },
+                { withCredentials: true }
+            );
+            if (!data.success) {
+                toast.error(normalizeMessage(data, 'Student recovery failed'));
+                return false;
+            }
+            toast.success(normalizeMessage(data, 'Student credentials recovered'));
+            return true;
+        }
+
+        toast.error('Please select a valid role for recovery.');
+        return false;
+    } catch (error) {
+        toast.error(error.message);
+        return false;
+    }
+};
+
 export default coordinatorLogin
+export { recoverCredentialsByRole }

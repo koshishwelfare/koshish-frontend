@@ -7,6 +7,7 @@ import Loader from "../../Loader";
 import EventCard from "./EventCard";
 import Pagination from "../../common/Pagination";
 import SearchFilterSort from "../../common/SearchFilterSort";
+import SectionIntro from "../../common/SectionIntro";
 
 const NewEvent = () => {
   const { newEvent, handleNewEvent } = useContext(AppContext);
@@ -45,7 +46,7 @@ const NewEvent = () => {
   const displayData = newEvent && Array.isArray(newEvent.data) ? newEvent.data : (Array.isArray(newEvent) && newEvent !== 'NODATA' && newEvent !== '5xx' ? newEvent : []);
 
   return (
-    <div className="relative px-4 sm:px-6 lg:px-8 py-8">
+    <div className="app-section pt-2">
       <Helmet>
         <title>See Recent Events - Koshish</title>
         <meta name="description" content="Stay updated with our recent events at Koshish." />
@@ -55,14 +56,10 @@ const NewEvent = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-blue10 mb-6">
-          See Recent Events
-        </h2>
-        <p className="text-md sm:text-xl font-sm text-gray-700 leading-relaxed">
-          Stay updated with our upcoming events! We are excited to bring new opportunities for learning, networking, and growth. These events are designed to inspire, challenge, and empower participants to make a difference in their fields.
-        </p>
-      </div>
+      <SectionIntro
+        title="See Recent Events"
+        description="Stay updated with our upcoming events. We bring new opportunities for learning, networking, and growth through experiences designed to inspire and empower participants."
+      />
 
       {/* Search, Filter, Sort */}
       <SearchFilterSort
@@ -87,7 +84,7 @@ const NewEvent = () => {
             <NoEvent />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((event) => (
                   <EventCard key={event._id} event={event} />
                 ))}

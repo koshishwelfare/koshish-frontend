@@ -4,6 +4,7 @@ import { AppContext } from '../../../context/App';
 import AlbumCard from './AlbumCard';
 import Pagination from '../../common/Pagination';
 import SearchFilterSort from '../../common/SearchFilterSort';
+import SectionIntro from '../../common/SectionIntro';
 
 const Memories = () => {
   const { memories, handleMemories } = useContext(AppContext);
@@ -23,7 +24,7 @@ const Memories = () => {
       limit: limit,
       isNews: false
     });
-  }, [searchValue, sortValue, sortOrder, currentPage, limit]);
+  }, [handleMemories, searchValue, sortValue, sortOrder, currentPage, limit]);
 
   useEffect(() => {
     if (memories && typeof memories === 'object' && memories.pagination) {
@@ -42,7 +43,7 @@ const Memories = () => {
   const displayData = memories && Array.isArray(memories.data) ? memories.data : (Array.isArray(memories) ? memories : []);
 
   return (
-    <div className="p-6">
+    <div className="app-section pt-2">
       <Helmet>
         <title>Koshish Memories</title>
         <meta name='description' content='A collection of cherished memories from Koshish.' />
@@ -52,17 +53,10 @@ const Memories = () => {
         <meta name='robots' content='index, follow' />
       </Helmet>
       
-      <div className="w-full px-4 py-12">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue10 mb-6">
-            Koshish Memories
-          </h2>
-          <p className="text-md sm:text-xl font-sm text-gray-700 leading-relaxed">
-            Every moment with KOSHISH is a memory worth preserving.
-            This section captures the essence of our journey — a vibrant tapestry of events, efforts, and emotions that have shaped who we are today.
-          </p>
-        </div>
-      </div>
+      <SectionIntro
+        title="Koshish Memories"
+        description="Every moment with Koshish is worth preserving. This section captures the journey through events, efforts, and the people behind them."
+      />
 
       {/* Search, Filter, Sort */}
       <SearchFilterSort
@@ -86,7 +80,7 @@ const Memories = () => {
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
             {displayData.map((item, idx) => (
               <AlbumCard key={item._id || idx} item={item} />
             ))}

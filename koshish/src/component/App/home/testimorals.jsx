@@ -11,7 +11,7 @@ const Testimonials = () => {
 
   useEffect(() => {
     handelTestimorals();
-  }, []);
+  }, [handelTestimorals]);
 
   useEffect(() => {
     if (testimorals && testimorals.length !== 0) setIsLoaded(false);
@@ -76,8 +76,6 @@ const Testimonials = () => {
           ))}
         </div>
       )}
-
-      {console.log("testimorals", testimorals)}
     </div>
   );
 };

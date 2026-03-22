@@ -47,11 +47,23 @@ const studentGetAttendance = async (backendURL, token) => {
   return data;
 };
 
+const studentGetDashboard = async (backendURL, token) => {
+  const { data } = await axios.get(`${backendURL}/api/user/student/dashboard`, authHeaders(token));
+  return data;
+};
+
+const studentGetAssignments = async (backendURL, token) => {
+  const { data } = await axios.get(`${backendURL}/api/user/student/assignments`, authHeaders(token));
+  return data;
+};
+
 export {
   studentListTests,
   studentGetTestById,
   studentSubmitTest,
   studentGetAnswers,
   studentGetLeaderboard,
-  studentGetAttendance
+  studentGetAttendance,
+  studentGetDashboard,
+  studentGetAssignments
 };

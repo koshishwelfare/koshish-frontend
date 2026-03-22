@@ -8,7 +8,6 @@ const contactus = async (backendURL, mydata) => {
       }
       else toast.error(data.message)
   } catch (error) {
-     console.log(error);
      toast.error(error.message);
   }
 }

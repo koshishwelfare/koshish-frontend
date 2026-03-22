@@ -1,6 +1,11 @@
 import { createContext, useState } from "react";
 import {
+  addTeacherClassChapter,
+  addTeacherClassSubject,
+  assignTeacherStudentsToClass,
   addTeacherStudent,
+  getTeacherClassCurriculum,
+  getTeacherAvailableClassStudents,
   addTeacherTestSeries,
   getDailyTeachingLogs,
   getTeacherClassOptions,
@@ -16,6 +21,7 @@ import {
   recoverStudentCredentials,
   recoverTeacherCredentials,
   saveDailyTeachingLog,
+  updateTeacherClassChapterTaught,
   updateTeacherPassword,
   updateTeacherProfile
 } from "../utilities/teacher/testAndAttendance";
@@ -39,6 +45,7 @@ const TeacherContextProvider = (props) => {
     pagination: { page: 1, limit: 10, total: 0, totalPages: 1 }
   });
   const [selectedStudentPerformance, setSelectedStudentPerformance] = useState(null);
+  const [teacherClassCurriculum, setTeacherClassCurriculum] = useState(null);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const handleAddTestSeries = async (payload) => {
@@ -56,6 +63,7 @@ const TeacherContextProvider = (props) => {
   const handleGetStudents = async (classId = '') => {
     const data = await getTeacherStudents(backendURL, teaToken, classId);
     setTeacherStudents(data);
+    return data;
   };
 
   const handleGetStudentsList = async (query = {}) => {
@@ -145,6 +153,44 @@ const TeacherContextProvider = (props) => {
     return data;
   };
 
+  const handleGetClassCurriculum = async (classId) => {
+    const data = await getTeacherClassCurriculum(backendURL, teaToken, classId);
+    setTeacherClassCurriculum(data);
+    return data;
+  };
+
+  const handleAddClassSubject = async (classId, payload) => {
+    const data = await addTeacherClassSubject(backendURL, teaToken, classId, payload);
+    if (data) {
+      setTeacherClassCurriculum(data);
+    }
+    return data;
+  };
+
+  const handleAddClassChapter = async (classId, subjectId, payload) => {
+    const data = await addTeacherClassChapter(backendURL, teaToken, classId, subjectId, payload);
+    if (data) {
+      setTeacherClassCurriculum(data);
+    }
+    return data;
+  };
+
+  const handleMarkClassChapterTaught = async (classId, subjectId, chapterId, payload = {}) => {
+    const data = await updateTeacherClassChapterTaught(backendURL, teaToken, classId, subjectId, chapterId, payload);
+    if (data) {
+      setTeacherClassCurriculum(data);
+    }
+    return data;
+  };
+
+  const handleGetAvailableClassStudents = async (classId, query = {}) => {
+    return await getTeacherAvailableClassStudents(backendURL, teaToken, classId, query);
+  };
+
+  const handleAssignStudentsToClass = async (classId, payload = {}) => {
+    return await assignTeacherStudentsToClass(backendURL, teaToken, classId, payload);
+  };
+
   const value = {
     teaToken,
     setTeaToken,
@@ -157,6 +203,7 @@ const TeacherContextProvider = (props) => {
     teacherSelfAttendances,
     teacherStudentAttendanceListing,
     selectedStudentPerformance,
+    teacherClassCurriculum,
     handleAddTestSeries,
     handleGetTestSeries,
     handleGetStudents,
@@ -174,7 +221,13 @@ const TeacherContextProvider = (props) => {
     handleRecoverTeacherCredentials,
     handleRecoverStudentCredentials,
     handleSaveDailyTeachingLog,
-    handleGetDailyTeachingLogs
+    handleGetDailyTeachingLogs,
+    handleGetClassCurriculum,
+    handleAddClassSubject,
+    handleAddClassChapter,
+    handleMarkClassChapterTaught,
+    handleGetAvailableClassStudents,
+    handleAssignStudentsToClass
   };
 
   return (
