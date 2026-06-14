@@ -4,11 +4,11 @@ const inputField = "w-full mt-1 px-3 py-2 border-2 border-blue-400 rounded-lg sh
 
 const AddMentor = () => {
       const {handelAddMentor} = useContext(CocirculerContext)
-      const [name,setName] = useState(false);
-      const [email, setEmail] = useState(false);
+      const [name,setName] = useState('');
+      const [email, setEmail] = useState('');
       const [isLoading, setIsLoading] = useState(false);
       const [resdata, setResData] = useState(null);
-  const [role, setRole] = useState(false);
+  const [role, setRole] = useState('');
 
       const onsubmitHandler = async (e)=>{
           e.preventDefault();
@@ -71,7 +71,7 @@ const AddMentor = () => {
         isLoading ? <p className="text-sm text-blue-500">Adding member...</p>
         :<button
         type="submit"
-        className={`${!name || !email || !role ? 'bg-gray-500' : 'bg-green-600'} text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:bg-green-700 hover:scale-105`}
+        className={`${!name || !email || !role ? 'bg-gray-500' : 'bg-green-600'} text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:scale-105`}
         disabled={!name || !email || !role}
       >
         Add Member
