@@ -71,7 +71,7 @@ const AddMentor = () => {
         isLoading ? <p className="text-sm text-blue-500">Adding member...</p>
         :<button
         type="submit"
-        className="w-full bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:bg-green-700 hover:scale-105"
+        className={`${!name || !email || !role ? 'bg-gray-500' : 'bg-green-600'} text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:bg-green-700 hover:scale-105`}
         disabled={!name || !email || !role}
       >
         Add Member
