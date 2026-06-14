@@ -4,10 +4,11 @@ const inputField = "w-full mt-1 px-3 py-2 border-2 border-blue-400 rounded-lg sh
 
 const AddMentor = () => {
       const {handelAddMentor} = useContext(CocirculerContext)
-      const [name,setName] = useState('');
-      const [email, setEmail] = useState('');
+      const [name,setName] = useState(false);
+      const [email, setEmail] = useState(false);
       const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState('mentor');
+      const [resdata, setResData] = useState(null);
+  const [role, setRole] = useState(false);
 
       const onsubmitHandler = async (e)=>{
           e.preventDefault();
@@ -17,11 +18,12 @@ const AddMentor = () => {
             email,
             role
           });
-
+         
           if (data?.success) {
             setName('');
             setEmail('');
             setRole('mentor');
+            setResData(data);
           }
           setIsLoading(false);
       }
@@ -79,9 +81,9 @@ const AddMentor = () => {
       <p className="text-xs text-slate-500 text-center">
         Temporary password is auto-generated at account creation.
         {
-          data?.email?.sent === false && data?.credentials ? (
+          resdata?.email?.sent === false && resdata?.credentials ? (
             <span className="block mt-1 text-red-500">
-              Email sending failed. Credentials: {`Username: ${data.credentials.username}, Password: ${data.credentials.password}`}
+              Email sending failed. Credentials: {`Username: ${resdata.credentials.username}, Password: ${resdata.credentials.password}`}
             </span>
           ) : null
         }
