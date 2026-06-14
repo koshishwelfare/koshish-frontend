@@ -14,7 +14,7 @@ const AllMentor = ({ defaultRole = '', title = 'All Members' }) => {
   const [sort, setSort] = useState('newest');
   const [filter, setFilter] = useState(defaultRole);
 
-  const roleOptions = ['mentor', 'alumni', 'sponsor', 'visionary', 'cocurricular', 'collaborator'];
+  const roleOptions = ['mentor', 'alumni', 'sponsor', 'visionary'];
 
   useEffect(() => {
     setFilter(defaultRole);
