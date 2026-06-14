@@ -4,11 +4,11 @@ const inputField = "w-full mt-1 px-3 py-2 border-2 border-blue-400 rounded-lg sh
 
 const AddMentor = () => {
       const {handelAddMentor} = useContext(CocirculerContext)
-      const [name,setName] = useState(false);
-      const [email, setEmail] = useState(false);
+      const [name,setName] = useState('');
+      const [email, setEmail] = useState('');
       const [isLoading, setIsLoading] = useState(false);
       const [resdata, setResData] = useState(null);
-  const [role, setRole] = useState(false);
+  const [role, setRole] = useState('');
 
       const onsubmitHandler = async (e)=>{
           e.preventDefault();
