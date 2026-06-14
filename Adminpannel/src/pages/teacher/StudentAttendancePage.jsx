@@ -17,7 +17,7 @@ const StudentAttendancePage = () => {
     date: new Date().toISOString().slice(0, 10)
   });
   const [seatStatuses, setSeatStatuses] = useState({});
-  const [isStudentAttendanceModalOpen, setIsStudentAttendanceModalOpen] = useState(false);
+  const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [studentAttendanceListFilters, setStudentAttendanceListFilters] = useState({
     search: '',
     classId: '',
@@ -45,10 +45,14 @@ const StudentAttendancePage = () => {
     }
   };
 
-  const loadStudentsForSeatAttendance = async () => {
-    if (!studentAttendanceFilter.classId) return;
-    await handleGetStudents(studentAttendanceFilter.classId);
+  const loadStudentsForSeatAttendance = async (classIdOverride = '') => {
+    const effectiveClassId = String(classIdOverride || studentAttendanceFilter.classId || '').trim();
+    if (!effectiveClassId) return;
+
+    setIsLoadingStudents(true);
+    await handleGetStudents(effectiveClassId);
     setSeatStatuses({});
+    setIsLoadingStudents(false);
   };
 
   const cycleSeatStatus = (studentId) => {
@@ -79,7 +83,6 @@ const StudentAttendancePage = () => {
     }
 
     if (markedCount > 0) {
-      setIsStudentAttendanceModalOpen(false);
       setSeatStatuses({});
       await loadStudentAttendanceListing({
         page: 1,
@@ -94,13 +97,100 @@ const StudentAttendancePage = () => {
     loadStudentAttendanceListing();
   }, []);
 
+  useEffect(() => {
+    if (!teacherClasses.length) return;
+
+    const hasSelectedClass = teacherClasses.some((cls) => String(cls?._id || '') === String(studentAttendanceFilter.classId || ''));
+    if (hasSelectedClass) return;
+
+    const firstClassId = String(teacherClasses[0]?._id || '').trim();
+    if (!firstClassId) return;
+
+    setStudentAttendanceFilter((prev) => ({ ...prev, classId: firstClassId }));
+  }, [teacherClasses, studentAttendanceFilter.classId]);
+
+  useEffect(() => {
+    if (!studentAttendanceFilter.classId) {
+      setSeatStatuses({});
+      return;
+    }
+
+    loadStudentsForSeatAttendance(studentAttendanceFilter.classId);
+  }, [studentAttendanceFilter.classId]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white p-4 shadow">
         <h2 className="text-xl font-semibold">Student Attendance Listing</h2>
-        <button type="button" className="admin-btn admin-btn-primary" onClick={() => setIsStudentAttendanceModalOpen(true)}>
-          Mark Student Attendance
+        <button type="button" className="admin-btn admin-btn-secondary" onClick={() => loadStudentAttendanceListing({ page: 1 })}>
+          Refresh Listing
         </button>
+      </div>
+
+      <div className="rounded-lg bg-white p-4 shadow">
+        <h3 className="mb-3 text-lg font-semibold">Mark Student Attendance (Dedicated Page)</h3>
+        <form className="space-y-4" onSubmit={submitSeatAttendance}>
+          <div className="grid gap-2 md:grid-cols-3">
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={studentAttendanceFilter.classId}
+              onChange={(e) => setStudentAttendanceFilter((p) => ({ ...p, classId: e.target.value }))}
+              required
+            >
+              <option value="">Select Class</option>
+              {teacherClasses.map((cls) => (
+                <option key={cls._id} value={cls._id}>{`${cls.name} - ${cls.grade}${cls.section ? ` ${cls.section}` : ''}`}</option>
+              ))}
+            </select>
+            <input
+              className="w-full border rounded px-3 py-2"
+              type="date"
+              value={studentAttendanceFilter.date}
+              onChange={(e) => setStudentAttendanceFilter((p) => ({ ...p, date: e.target.value }))}
+              required
+            />
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={() => loadStudentsForSeatAttendance()}
+              disabled={!studentAttendanceFilter.classId || isLoadingStudents}
+            >
+              {isLoadingStudents ? 'Loading Students...' : 'Reload Students'}
+            </button>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 p-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {seatCards.map((student) => (
+                <button
+                  key={student._id}
+                  type="button"
+                  onClick={() => cycleSeatStatus(student._id)}
+                  className={`rounded-lg border p-3 text-left ${student.status === 'Present' ? 'border-emerald-300 bg-emerald-50' : student.status === 'Absent' ? 'border-rose-300 bg-rose-50' : 'border-amber-300 bg-amber-50'}`}
+                >
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Seat {student.seatNumber}</p>
+                  <p className="mt-1 font-semibold text-slate-800">{student.name}</p>
+                  <p className="text-xs text-slate-600">{student.rollNumber || student.registrationNumber || '-'}</p>
+                  <p className="mt-2 text-xs font-bold">Status: {student.status}</p>
+                </button>
+              ))}
+            </div>
+            {!seatCards.length && (
+              <p className="text-sm text-slate-500">
+                {isLoadingStudents ? 'Loading students...' : 'No students found for the selected class. Please check class assignment.'}
+              </p>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" className="rounded border px-3 py-1.5 text-sm" onClick={() => setSeatStatuses({})}>
+              Reset Statuses
+            </button>
+            <button className="rounded bg-blue-700 px-3 py-1.5 text-sm text-white" type="submit" disabled={!seatCards.length || isLoadingStudents}>
+              Submit Seat Attendance
+            </button>
+          </div>
+        </form>
       </div>
 
       <div className="grid gap-2 rounded-lg bg-white p-4 shadow md:grid-cols-8">
@@ -217,53 +307,6 @@ const StudentAttendancePage = () => {
         </div>
       </div>
 
-      {isStudentAttendanceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-5xl rounded-lg bg-white p-5 shadow-xl">
-            <h3 className="mb-3 text-lg font-semibold">Mark Student Attendance (Seat Layout)</h3>
-            <form className="space-y-4" onSubmit={submitSeatAttendance}>
-              <div className="grid gap-2 md:grid-cols-3">
-                <select className="w-full border rounded px-3 py-2" value={studentAttendanceFilter.classId} onChange={(e) => setStudentAttendanceFilter((p) => ({ ...p, classId: e.target.value }))} required>
-                  <option value="">Select Class</option>
-                  {teacherClasses.map((cls) => (
-                    <option key={cls._id} value={cls._id}>{`${cls.name} - ${cls.grade}${cls.section ? ` ${cls.section}` : ''}`}</option>
-                  ))}
-                </select>
-                <input className="w-full border rounded px-3 py-2" type="date" value={studentAttendanceFilter.date} onChange={(e) => setStudentAttendanceFilter((p) => ({ ...p, date: e.target.value }))} required />
-                <button type="button" className="admin-btn admin-btn-secondary" onClick={loadStudentsForSeatAttendance}>Load Students</button>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 p-3">
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {seatCards.map((student) => (
-                    <button
-                      key={student._id}
-                      type="button"
-                      onClick={() => cycleSeatStatus(student._id)}
-                      className={`rounded-lg border p-3 text-left ${student.status === 'Present' ? 'border-emerald-300 bg-emerald-50' : student.status === 'Absent' ? 'border-rose-300 bg-rose-50' : 'border-amber-300 bg-amber-50'}`}
-                    >
-                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Seat {student.seatNumber}</p>
-                      <p className="mt-1 font-semibold text-slate-800">{student.name}</p>
-                      <p className="text-xs text-slate-600">{student.rollNumber || student.registrationNumber || '-'}</p>
-                      <p className="mt-2 text-xs font-bold">Status: {student.status}</p>
-                    </button>
-                  ))}
-                </div>
-                {!seatCards.length && <p className="text-sm text-slate-500">Load class students to mark attendance.</p>}
-              </div>
-
-              <div className="flex justify-end gap-2 pt-1">
-                <button type="button" className="rounded border px-3 py-1.5 text-sm" onClick={() => setIsStudentAttendanceModalOpen(false)}>
-                  Cancel
-                </button>
-                <button className="rounded bg-blue-700 px-3 py-1.5 text-sm text-white" type="submit" disabled={!seatCards.length}>
-                  Submit Seat Attendance
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

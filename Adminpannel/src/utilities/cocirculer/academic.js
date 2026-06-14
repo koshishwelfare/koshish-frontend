@@ -179,6 +179,80 @@ const getTeacherAttendanceByDailyToken = async (backendURL, cirToken, query = {}
   }
 };
 
+const listAcademicHolidays = async (backendURL, cirToken, sessionId = '') => {
+  try {
+    const params = sessionId ? { sessionId } : {};
+    const { data } = await axios.get(`${backendURL}/api/cocirculer/academic/holidays`, {
+      ...headers(cirToken),
+      params
+    });
+    if (!data.success) {
+      toast.error(data.message);
+      return { sessions: [], holidays: [] };
+    }
+    return data.data || { sessions: [], holidays: [] };
+  } catch (error) {
+    toast.error(error.message);
+    return { sessions: [], holidays: [] };
+  }
+};
+
+const createAcademicHoliday = async (backendURL, cirToken, sessionId, payload) => {
+  try {
+    const { data } = await axios.post(
+      `${backendURL}/api/cocirculer/academic/session/${sessionId}/holidays/add`,
+      payload,
+      headers(cirToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Holiday added');
+    return data.data;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const updateAcademicHolidayById = async (backendURL, cirToken, sessionId, holidayId, payload) => {
+  try {
+    const { data } = await axios.patch(
+      `${backendURL}/api/cocirculer/academic/session/${sessionId}/holidays/update/${holidayId}`,
+      payload,
+      headers(cirToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Holiday updated');
+    return data.data;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const deleteAcademicHolidayById = async (backendURL, cirToken, sessionId, holidayId) => {
+  try {
+    const { data } = await axios.delete(
+      `${backendURL}/api/cocirculer/academic/session/${sessionId}/holidays/delete/${holidayId}`,
+      headers(cirToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return false;
+    }
+    toast.success(data.message || 'Holiday deleted');
+    return true;
+  } catch (error) {
+    toast.error(error.message);
+    return false;
+  }
+};
+
 export {
   createAcademicSession,
   listAcademicSessions,
@@ -190,5 +264,9 @@ export {
   getAcademicClassById,
   updateAcademicClassById,
   getTeacherAttendanceDailyQr,
-  getTeacherAttendanceByDailyToken
+  getTeacherAttendanceByDailyToken,
+  listAcademicHolidays,
+  createAcademicHoliday,
+  updateAcademicHolidayById,
+  deleteAcademicHolidayById
 };

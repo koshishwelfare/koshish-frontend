@@ -38,7 +38,16 @@ import AcademicClassList from '../../components/cocercular/Academic/AcademicClas
 import AcademicClassView from '../../components/cocercular/Academic/AcademicClassView';
 import AcademicClassEdit from '../../components/cocercular/Academic/AcademicClassEdit';
 import AcademicTeacherAttendance from '../../components/cocercular/Academic/AcademicTeacherAttendance';
+import AcademicHolidayManager from '../../components/cocercular/Academic/AcademicHolidayManager';
 import ProfileManagement from '../../components/cocercular/ProfileManagement/ProfileManagement';
+import CocircularDirectoryList from '../../components/cocercular/directory/CocircularDirectoryList';
+import CocircularDirectoryView from '../../components/cocercular/directory/CocircularDirectoryView';
+import CocircularDirectoryCreate from '../../components/cocercular/directory/CocircularDirectoryCreate';
+import CocircularDirectoryEdit from '../../components/cocercular/directory/CocircularDirectoryEdit';
+import CollaboratorDirectoryList from '../../components/cocercular/directory/CollaboratorDirectoryList';
+import CollaboratorDirectoryView from '../../components/cocercular/directory/CollaboratorDirectoryView';
+import CollaboratorDirectoryCreate from '../../components/cocercular/directory/CollaboratorDirectoryCreate';
+import CollaboratorDirectoryEdit from '../../components/cocercular/directory/CollaboratorDirectoryEdit';
 const Indexcocirculer = () => {
   return (
     <div className="app-shell">
@@ -54,6 +63,14 @@ const Indexcocirculer = () => {
                         <Route path='/member/all' element={<AllMentor/>} />
                         <Route path='/member/:id' element={<GetMentorById/>} />
                         <Route path='/member/update/:id' element={<UpdateMentor/>} />
+                        <Route path='/directory/co-curricular' element={<CocircularDirectoryList/>} />
+                        <Route path='/directory/co-curricular/add' element={<CocircularDirectoryCreate/>} />
+                        <Route path='/directory/co-curricular/:id' element={<CocircularDirectoryView/>} />
+                        <Route path='/directory/co-curricular/edit/:id' element={<CocircularDirectoryEdit/>} />
+                        <Route path='/directory/collaborators' element={<CollaboratorDirectoryList/>} />
+                        <Route path='/directory/collaborators/add' element={<CollaboratorDirectoryCreate/>} />
+                        <Route path='/directory/collaborators/:id' element={<CollaboratorDirectoryView/>} />
+                        <Route path='/directory/collaborators/edit/:id' element={<CollaboratorDirectoryEdit/>} />
                         {/* home */}
                         {/* header */}
                         <Route path='/landpage/header/add' element={<Header/>} />
@@ -92,6 +109,7 @@ const Indexcocirculer = () => {
                         <Route path='/academic/classes' element={<AcademicClassList/>} />
                         <Route path='/academic/classes/view/:id' element={<AcademicClassView/>} />
                         <Route path='/academic/classes/edit/:id' element={<AcademicClassEdit/>} />
+                        <Route path='/academic/holidays' element={<AcademicHolidayManager/>} />
                         <Route path='/academic/teacher-attendance' element={<AcademicTeacherAttendance/>} />
                         <Route path='/profile-management' element={<ProfileManagement/>} />
                         <Route path='/contact' element={<Contact/>} />

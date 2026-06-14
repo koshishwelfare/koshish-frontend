@@ -5,44 +5,61 @@ import MentorCard from "./MentorCard";
 import ServerErr from "../../SeverErr";
 import NoData from "../../NoData";
 import Loader from "../../Loader";
-import { useNavigate } from "react-router-dom";
+import SectionIntro from "../../common/SectionIntro";
+import SearchFilterSort from "../../common/SearchFilterSort";
+import Pagination from "../../common/Pagination";
 
 const IndexMentor = () => {
   const { allMentor, handelgetAllMentor } = useContext(AppContext);
-  const [filteredMentors, setFilteredMentors] = useState([]);
+  const isLoadingState = Array.isArray(allMentor);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [searchValue, setSearchValue] = useState("");
+  const [sortValue, setSortValue] = useState("joinTime");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [selectedYog, setSelectedYog] = useState("All");
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    handelgetAllMentor();
-  }, []);
+    handelgetAllMentor({
+      q: searchValue,
+      sortBy: sortValue,
+      sortOrder,
+      page: currentPage,
+      limit,
+      role: "mentor",
+      isActive: true,
+      yog: selectedYog === "All" ? undefined : Number(selectedYog)
+    });
+  }, [handelgetAllMentor, searchValue, sortValue, sortOrder, currentPage, limit, selectedYog]);
 
-  useEffect(() => {
-    if (allMentor && typeof allMentor !== "string") {
-      setFilteredMentors(allMentor);
-    }
-  }, [allMentor]);
+  const mentorItems = allMentor && Array.isArray(allMentor.data)
+    ? allMentor.data
+    : (Array.isArray(allMentor) ? allMentor : []);
 
-  const handleFilterChange = (e) => {
-    const value = e.target.value;
+  const paginationData = allMentor && typeof allMentor === "object" && allMentor.pagination
+    ? allMentor.pagination
+    : null;
+
+  const handleFilterChange = (value) => {
     setSelectedYog(value);
-
-    if (value === "All") {
-      setFilteredMentors(allMentor);
-    } else {
-      const filtered = allMentor.filter((mentor) => mentor.yog == value);
-      setFilteredMentors(filtered);
-    }
+    setCurrentPage(1);
   };
 
-  // Extract unique YOGs for dropdown
-  const uniqueYogs = allMentor && typeof allMentor !== "string"
-    ? Array.from(new Set(allMentor.map((mentor) => mentor.yog))).sort((a, b) => b - a)
+  const uniqueYogs = mentorItems.length
+    ? Array.from(new Set(mentorItems.map((mentor) => mentor.yog).filter(Boolean))).sort((a, b) => b - a)
     : [];
 
+  const handleReset = () => {
+    setCurrentPage(1);
+    setLimit(20);
+    setSearchValue("");
+    setSortValue("joinTime");
+    setSortOrder("desc");
+    setSelectedYog("All");
+  };
+
   return (
-    <div className="md:mb-32 py-1 sm:px-6 lg:px-8 mb-24">
+    <div className="app-section pt-2">
       <Helmet>
         <title>Meet Our Mentors - Koshish</title>
         <meta name="description" content="Discover the inspiring stories of our Koshish mentors." />
@@ -53,55 +70,66 @@ const IndexMentor = () => {
         <link rel="canonical" href="https://www.koshishwelfare.in/mentors" />
         
       </Helmet>
-      <div className="w-full px-4 py-12">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue10 mb-6">
-            Meet Our Mentors
-          </h2>
-          <p className="text-md sm:text-xl font-sm text-gray-700 leading-relaxed mb-8">
-            Our mentors are the backbone of Koshish, actively contributing their time, skills, and passion to uplift underprivileged students.
-            Through consistent efforts and dedication, they guide, teach, and inspire children to dream big and achieve more. Their hard work plays a crucial role in shaping a better future for the students and the community.
-          </p>
-          {/* Yog Filter Dropdown */}
-          {uniqueYogs.length > 0 && (
-            <div className="flex justify-start mb-8">
-              <select
-                value={selectedYog}
-                onChange={handleFilterChange}
-                className="px-4 py-2 rounded-lg border border-blue-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-700 font-medium"
-              >
-                <option value="All">All Years</option>
-                {uniqueYogs.map((yog) => (
-                  <option key={yog} value={yog}>
-                    {yog - 4} - {yog}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      </div>
+      <SectionIntro
+        title="Meet Our Mentors"
+        description="Our mentors actively contribute time, skills, and guidance to help students dream bigger and achieve more."
+      />
 
-      {/* Mentors Cards Section */}
-      <div className="p-5 rounded-lg shadow-md">
+      <SearchFilterSort
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        filterOptions={[
+          { label: "All Years", value: "All" },
+          ...uniqueYogs.map((yog) => ({ label: `${yog - 4} - ${yog}`, value: String(yog) }))
+        ]}
+        filterValue={selectedYog}
+        onFilterChange={handleFilterChange}
+        sortOptions={[
+          { label: "Join Time", value: "joinTime" },
+          { label: "Name", value: "name" },
+          { label: "YOG", value: "yog" }
+        ]}
+        sortValue={sortValue}
+        onSortChange={setSortValue}
+        sortOrderValue={sortOrder}
+        onSortOrderChange={setSortOrder}
+        onReset={handleReset}
+      />
+
+      <div className="app-card border-none p-5 shadow-none">
         {allMentor && (
-          <div className="">
+          <div>
             {allMentor === "5xx" ? (
               <ServerErr />
             ) : (
               <div>
-                {allMentor === "NODATA" ? (
+                {isLoadingState ? (
+                  <Loader />
+                ) : allMentor === "NODATA" ? (
                   <NoData />
                 ) : (
                   <div>
-                    {filteredMentors.length === 0 ? (
-                      <Loader />
+                    {mentorItems.length === 0 ? (
+                      <NoData />
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-                        {filteredMentors.map((item, idx) => (
+                      <div className="grid grid-cols-1 gap-6 justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        {mentorItems.map((item, idx) => (
                           <MentorCard item={item} key={idx} />
                         ))}
                       </div>
+                    )}
+
+                    {paginationData && paginationData.totalPages > 1 && (
+                      <Pagination
+                        currentPage={paginationData.page}
+                        totalPages={paginationData.totalPages}
+                        onPageChange={setCurrentPage}
+                        limit={limit}
+                        onLimitChange={(newLimit) => {
+                          setLimit(newLimit);
+                          setCurrentPage(1);
+                        }}
+                      />
                     )}
                   </div>
                 )}

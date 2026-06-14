@@ -41,7 +41,7 @@ const EventCard = ({ event }) => {
   }, [event]);
 
   return (
-    <div className="bg-green-100 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-4 max-w-sm w-full sm:w-[90%] md:w-[22rem]">
+    <div className="app-card h-full w-full border border-emerald-100 p-4 transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
       {/* Thumbnail */}
       <Helmet>
         <title>Event - Koshish</title>
@@ -51,23 +51,23 @@ const EventCard = ({ event }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
       </Helmet>
-      <img
+        <img
         onClick={() => navigate(`/events/${event._id}`)}
         src={event.thumbnail}
         alt={event.name}
-        className="w-full h-48 object-cover rounded-xl cursor-pointer transition duration-200 hover:opacity-90"
+        className="h-44 w-full cursor-pointer rounded-xl object-cover transition duration-200 hover:opacity-90 sm:h-48"
       />
 
       {/* Content */}
       <div className="mt-4 space-y-3">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <h2 className="text-2xl font-bold text-gray-800">{event.name}</h2>
+          <h2 className="text-2xl font-bold text-slate-800">{event.name}</h2>
           <span
             className={`text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap ${
               event.registrationOpen
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-rose-100 text-rose-700"
             }`}
           >
             {event.registrationOpen ? "Registration Open" : "Registration Closed"}
@@ -122,7 +122,7 @@ const EventCard = ({ event }) => {
         {/* Button */}
         <button
           onClick={() => navigate(`/events/${event._id}`)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2 rounded-lg transition duration-200"
+          className="app-btn-primary w-full text-sm"
         >
           🔍 View Event
         </button>

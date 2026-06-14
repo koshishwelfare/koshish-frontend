@@ -5,6 +5,7 @@ import AddMentor from "../utilities/cocirculer/member/AddMentor";
 import AllMentor from "../utilities/cocirculer/member/AllMentor";
 import {getMentorById,MakeTopMentorById,TerminateMentorById} from "../utilities/cocirculer/member/getMentorById";
 import updateMentor from "../utilities/cocirculer/member/updateMentor";
+import updateMemberRole from "../utilities/cocirculer/member/updateMemberRole";
 import terminateMentor from "../utilities/cocirculer/member/terminateMentor";
 import contact from "../utilities/cocirculer/contact";
 import {Addevent,updateEvent,hideEvent,AllEvents,topEvent,EventsById,deleteEventById} from '../utilities/cocirculer/Events/events'
@@ -13,15 +14,19 @@ import {AddAnouncement,AllNews,updateNewsById,getNewsById,HideNewsbyId} from "..
 import {getAllGallery,AddGallery,updateGallery,deleteGallery ,getGalleryById} from '../utilities/cocirculer/Gallery/gallery'
 import {
   createAcademicClass,
+  createAcademicHoliday,
   createAcademicSession,
+  deleteAcademicHolidayById,
   getTeacherAttendanceByDailyToken,
   getTeacherAttendanceDailyQr,
   getAcademicClassById,
   getAcademicSessionById,
+  listAcademicHolidays,
   listAcademicClasses,
   listAcademicMentors,
   listAcademicSessions,
   updateAcademicClassById,
+  updateAcademicHolidayById,
   updateAcademicSessionById
 } from '../utilities/cocirculer/academic';
 import {
@@ -53,6 +58,7 @@ const  CocirculerContextProvider = (props) => {
   const [academicSessions, setAcademicSessions] = useState([])
   const [academicMentors, setAcademicMentors] = useState([])
   const [academicClasses, setAcademicClasses] = useState([])
+  const [academicHolidays, setAcademicHolidays] = useState([])
   const [teacherDailyQr, setTeacherDailyQr] = useState(null)
   const [teacherDailyAttendance, setTeacherDailyAttendance] = useState(null)
 
@@ -99,6 +105,9 @@ const handelMakeTopMentorById=(id)=> {
 const handelUpdateMentorById = (id, formdata)=>{
   console.log(id);
   updateMentor(backendURL, formdata, id, cirToken)
+}
+const handleUpdateMemberRoleById = async (id, role)=>{
+  return await updateMemberRole(backendURL, id, role, cirToken)
 }
 const handelTerminateMentor = (email)=>{
   terminateMentor (backendURL, email, cirToken)
@@ -199,6 +208,20 @@ const handleAddAcademicSession = async (payload)=>{
 const handleAddAcademicClass = async (payload)=>{
   return await createAcademicClass(backendURL, cirToken, payload)
 }
+const handleGetAcademicHolidays = async (sessionId = '')=>{
+  const data = await listAcademicHolidays(backendURL, cirToken, sessionId)
+  setAcademicHolidays(data?.holidays || [])
+  return data
+}
+const handleAddAcademicHoliday = async (sessionId, payload)=>{
+  return await createAcademicHoliday(backendURL, cirToken, sessionId, payload)
+}
+const handleUpdateAcademicHolidayById = async (sessionId, holidayId, payload)=>{
+  return await updateAcademicHolidayById(backendURL, cirToken, sessionId, holidayId, payload)
+}
+const handleDeleteAcademicHolidayById = async (sessionId, holidayId)=>{
+  return await deleteAcademicHolidayById(backendURL, cirToken, sessionId, holidayId)
+}
 const handleGetAcademicSessionById = async (id)=>{
   return await getAcademicSessionById(backendURL, cirToken, id)
 }
@@ -244,6 +267,7 @@ const handleUpdateOwnProfile = async (payload)=>{
   getMentor, setMentor,handelgetMentor,
   MentorById, setMentorById ,handelMentorById,
   handelAddMentor, handelUpdateMentorById, handelTerminateMentor,handelTearminateMentorById,handelMakeTopMentorById,
+  handleUpdateMemberRoleById,
   // announcement section
   news, setNews, handelgetAllNews,
   newsById,setNewsById,handelgetNewsById,
@@ -261,11 +285,16 @@ const handleUpdateOwnProfile = async (payload)=>{
   academicSessions,
   academicMentors,
   academicClasses,
+  academicHolidays,
   handleGetAcademicSessions,
   handleGetAcademicMentors,
   handleGetAcademicClasses,
   handleAddAcademicSession,
   handleAddAcademicClass,
+  handleGetAcademicHolidays,
+  handleAddAcademicHoliday,
+  handleUpdateAcademicHolidayById,
+  handleDeleteAcademicHolidayById,
   handleGetAcademicSessionById,
   handleUpdateAcademicSessionById,
   handleGetAcademicClassById,

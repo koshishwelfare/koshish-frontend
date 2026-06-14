@@ -69,6 +69,13 @@ const StudentAuth = () => {
           >
             Register
           </button>
+          <button
+            type="button"
+            onClick={() => setTab('forgot')}
+            className={`flex-1 py-2 rounded-md font-semibold transition ${tab === 'forgot' ? 'bg-blue10 text-white' : 'text-gray-700'}`}
+          >
+            Forgot Password
+          </button>
         </div>
 
         {tab === 'login' ? (
@@ -96,35 +103,15 @@ const StudentAuth = () => {
             >
               {isLoading ? 'Please wait...' : 'Login'}
             </button>
-            <div className="pt-2 border-t">
-              <p className="text-sm text-gray-600 mb-2">Forgot username/password?</p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Registered email (optional)"
-                  value={recoveryForm.email}
-                  onChange={(e) => setRecoveryForm((prev) => ({ ...prev, email: e.target.value }))}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Username (recommended)"
-                  value={recoveryForm.username}
-                  onChange={(e) => setRecoveryForm((prev) => ({ ...prev, username: e.target.value }))}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  type="button"
-                  disabled={isLoading || (!recoveryForm.email && !recoveryForm.username)}
-                  onClick={onRecoverSubmit}
-                  className="px-4 py-2 bg-blue10 text-white rounded-lg disabled:opacity-60"
-                >
-                  Recover
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => setTab('forgot')}
+              className="w-full rounded-lg border border-blue10 px-4 py-2 font-semibold text-blue10"
+            >
+              Forgot Password?
+            </button>
           </form>
-        ) : (
+        ) : tab === 'register' ? (
           <form className="space-y-4" onSubmit={onRegisterSubmit}>
             <input
               type="text"
@@ -194,6 +181,30 @@ const StudentAuth = () => {
               className="w-full bg-blue10 text-white py-2 rounded-lg font-semibold hover:opacity-95 transition disabled:opacity-60"
             >
               {isLoading ? 'Please wait...' : 'Create Account'}
+            </button>
+          </form>
+        ) : (
+          <form className="space-y-4" onSubmit={onRecoverSubmit}>
+            <input
+              type="email"
+              placeholder="Registered email (optional)"
+              value={recoveryForm.email}
+              onChange={(e) => setRecoveryForm((prev) => ({ ...prev, email: e.target.value }))}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              placeholder="Username (recommended)"
+              value={recoveryForm.username}
+              onChange={(e) => setRecoveryForm((prev) => ({ ...prev, username: e.target.value }))}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || (!recoveryForm.email && !recoveryForm.username)}
+              className="w-full bg-blue10 text-white py-2 rounded-lg font-semibold hover:opacity-95 transition disabled:opacity-60"
+            >
+              {isLoading ? 'Please wait...' : 'Recover Password'}
             </button>
           </form>
         )}

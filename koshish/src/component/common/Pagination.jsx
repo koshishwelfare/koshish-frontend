@@ -17,22 +17,38 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, onLimitChang
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-8 mb-8 px-4">
-      {/* Previous Button */}
-      <button
-        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-        className={`px-4 py-2 rounded-lg font-medium transition ${
-          currentPage === 1
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
-        }`}
-      >
-        ← Previous
-      </button>
+    <div className="mb-8 mt-8 rounded-xl border border-slate-200 bg-white px-3 py-4 shadow-sm sm:px-4">
+      <div className="flex items-center justify-between gap-3">
+        <button
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className={`rounded-lg px-3 py-2 text-sm font-medium transition sm:px-4 ${
+            currentPage === 1
+              ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+        >
+          Prev
+        </button>
 
-      {/* Page Numbers */}
-      <div className="flex gap-2 flex-wrap justify-center">
+        <p className="text-sm font-medium text-gray-600">
+          Page {currentPage} of {totalPages}
+        </p>
+
+        <button
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className={`rounded-lg px-3 py-2 text-sm font-medium transition sm:px-4 ${
+            currentPage === totalPages
+              ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+        >
+          Next
+        </button>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
         {startPage > 1 && (
           <>
             <button
@@ -72,34 +88,17 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, onLimitChang
         )}
       </div>
 
-      {/* Next Button */}
-      <button
-        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-        disabled={currentPage === totalPages}
-        className={`px-4 py-2 rounded-lg font-medium transition ${
-          currentPage === totalPages
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
-        }`}
-      >
-        Next →
-      </button>
-
-      {/* Items Per Page */}
-      <select
-        value={limit}
-        onChange={(e) => onLimitChange(Number(e.target.value))}
-        className="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value={10}>10 per page</option>
-        <option value={20}>20 per page</option>
-        <option value={50}>50 per page</option>
-      </select>
-
-      {/* Page Info */}
-      <p className="text-gray-600 font-medium">
-        Page {currentPage} of {totalPages}
-      </p>
+      <div className="mt-3 flex justify-center">
+        <select
+          value={limit}
+          onChange={(e) => onLimitChange(Number(e.target.value))}
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value={10}>10 per page</option>
+          <option value={20}>20 per page</option>
+          <option value={50}>50 per page</option>
+        </select>
+      </div>
     </div>
   );
 };

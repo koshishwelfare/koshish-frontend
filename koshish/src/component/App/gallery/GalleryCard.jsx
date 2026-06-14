@@ -19,10 +19,6 @@ import lgRotate from 'lightgallery/plugins/rotate';
 import React from 'react';
 
 const GalleryCard = ({ gallery }) => {
-  const onInit = () => {
-    console.log('lightGallery has been initialized');
-  };
-
   return (
     <div className="px-4 py-8">
       <Helmet>
@@ -32,7 +28,6 @@ const GalleryCard = ({ gallery }) => {
       </Helmet>
       <div className="flex flex-wrap justify-center gap-6">
         <LightGallery
-          onInit={onInit}
           speed={500}
           plugins={[lgThumbnail, lgZoom, lgAutoplay, lgFullscreen, lgRotate]}
           elementClassNames="flex flex-wrap gap-6 justify-center w-full"

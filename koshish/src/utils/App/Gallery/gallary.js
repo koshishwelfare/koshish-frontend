@@ -15,6 +15,11 @@ const buildQueryParams = (options = {}) => {
   );
 };
 
+const normalizeListPayload = (payload) => ({
+  data: Array.isArray(payload?.data) ? payload.data : [],
+  pagination: payload?.pagination || null
+});
+
 const getAllMemories = async (backendURL, setMemories, options = {}) => {
    try {
        const params = buildQueryParams({
@@ -25,8 +30,7 @@ const getAllMemories = async (backendURL, setMemories, options = {}) => {
        const query = new URLSearchParams(params).toString();
        const {data} = await axios.get(`${backendURL}/api/app/memories${query ? '?' + query : ''}`)
        if(data.success) {
-        setMemories(data.data);
-           toast.success(data.message);
+        setMemories(normalizeListPayload(data));
        }
        else toast.error(data.message);
    } catch (error) {
@@ -44,8 +48,7 @@ const getAllNews = async (backendURL, setNewsPaper, options = {}) => {
       const query = new URLSearchParams(params).toString();
       const {data} = await axios.get(`${backendURL}/api/app/newspaper${query ? '?' + query : ''}`)
       if(data.success) {
-        setNewsPaper(data.data);
-          toast.success(data.message);
+        setNewsPaper(normalizeListPayload(data));
       }
       else toast.error(data.message);
   } catch (error) {
@@ -58,7 +61,6 @@ const getGalleryById = async (backendURL, setGalleryById, id) => {
         const {data} = await axios.get(backendURL+ `/api/app/gallery/${id}`)
         if(data.success) {
             setGalleryById(data.data);
-            toast.success(data.message);
         }
         else toast.error(data.message);
     } catch (error) {

@@ -1,39 +1,97 @@
 @import "tailwindcss";
 
 @theme {
-     /* Primary Green (Base Color) */
-    --color-green00 : #4C8826;
-    /* Secondary Greens (Lighter & Darker Variants) */
-          /*Lighter Green (For highlights, accents)*/
-    --color-green10 : #7CB342; /*(RGB: 124, 179, 66)*/
-    --color-green11 : #A5D6A7; /*(RGB: 165, 214, 167)*/
-         /*Darker Green (For contrast, depth)*/
-    --color-green12 : #2E7D32; /*(RGB: 46, 125, 50)*/
-    --color-green12 : #1B5E20; /*(RGB: 27, 94, 32)*/
-    /* Tertiary Greens (Supporting Shades for Gradient/Depth) */
-    --color-green20 : #8BC34A; /*  (RGB: 139, 195, 74) Muted Green (For softer looks)*/
-    --color-green21: #145A32; /*(RGB: 20, 90, 50) Deep Forest Green (For strong emphasis)*/
-     /* Primary Blue (Base Color) */
-     --color-blue00 : #0003FB;
-     /* Secondary Blues (Lighter & Darker Variants) */
-     /*Lighter Blues (For highlights, accents)*/
-     --color-blue10 :#2196F3; /*(RGB: 33, 150, 243) → Bright sky blue*/ 
-     --color-blue11 : #90CAF9; /*(RGB: 144, 202, 249) → Soft pastel blue*/
-    
-     /*Darker Blues (For contrast, depth)*/
-     --color-blue12 : #0D47A1;  /* (RGB: 13, 71, 161) → Deep navy blue*/
-     --color-blue12 : #1A237E; /* (RGB: 26, 35, 126) → Rich royal blue*/
-     /* Tertiary Greens (Supporting Shades for Gradient/Depth) */
-     --color-blue20 : #64B5F6; /*(RGB: 100, 181, 246) → Cool soft blue*/
-     --color-blue21 : #3F51B5; /*(RGB: 63, 81, 181) → Strong energetic blue*/
-    
+     --color-green00: #4c8826;
+     --color-green10: #7cb342;
+     --color-green11: #a5d6a7;
+     --color-green12: #2e7d32;
+     --color-green13: #1b5e20;
+     --color-green20: #8bc34a;
+     --color-green21: #145a32;
 
-  }
+     --color-blue00: #0003fb;
+     --color-blue10: #2196f3;
+     --color-blue11: #90caf9;
+     --color-blue12: #0d47a1;
+     --color-blue13: #1a237e;
+     --color-blue20: #64b5f6;
+     --color-blue21: #3f51b5;
 
-  
- 
- .lg-react-element {
+     --color-surface-0: #f7fbf4;
+     --color-surface-1: #eef8ea;
+     --color-surface-2: #dff2d7;
+     --color-text-strong: #122c1a;
+     --color-text-muted: #355141;
+     --color-accent: #1f7bd6;
+     --color-accent-strong: #154f96;
+}
+
+@layer base {
+     html,
+     body,
+     #root {
+          min-height: 100%;
+     }
+
+     body {
+          background: linear-gradient(180deg, var(--color-surface-0) 0%, #ffffff 70%);
+          color: var(--color-text-strong);
+     }
+}
+
+@layer utilities {
+     .app-shell {
+          @apply bg-green-50 text-slate-800;
+     }
+
+     .app-section {
+          @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
+     }
+
+     .app-card {
+          @apply rounded-2xl border border-emerald-100 bg-white/90 shadow-sm backdrop-blur;
+     }
+
+     .app-heading {
+          @apply text-2xl font-bold tracking-tight text-blue12 sm:text-3xl;
+     }
+
+     .app-subheading {
+          @apply text-sm text-slate-600 sm:text-base;
+     }
+
+     .app-btn-primary {
+          @apply rounded-lg bg-blue10 px-4 py-2 font-semibold text-white transition hover:bg-blue12;
+     }
+
+     .app-btn-secondary {
+          @apply rounded-lg border border-emerald-300 bg-white px-4 py-2 font-semibold text-emerald-700 transition hover:bg-emerald-50;
+     }
+
+     .app-data-card {
+          @apply rounded-xl border border-slate-200 bg-white p-4 shadow-sm;
+     }
+
+     .app-data-label {
+          @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
+     }
+
+     .app-data-value {
+          @apply mt-1 text-sm font-medium text-slate-800;
+     }
+}
+
+.lg-react-element {
      column-count: 3;
      column-gap: 10px;
- }
- 
+}
+
+@media (prefers-reduced-motion: reduce) {
+     * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+     }
+}
+

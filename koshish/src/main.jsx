@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from 'react-dom/client'
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from 'react-helmet-async';
 import  AppContextProvider  from './context/App.jsx'
 import StudentContextProvider from './context/StudentContext.jsx'
 import TeacherContextProvider  from './context/TeacherContext.jsx'

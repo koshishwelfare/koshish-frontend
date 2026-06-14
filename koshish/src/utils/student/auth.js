@@ -34,6 +34,30 @@ const getStudentProfile = async (backendURL, token) => {
 };
 
 const updateStudentProfile = async (backendURL, token, payload) => {
+  const hasImageFile = payload?.image instanceof File;
+
+  if (hasImageFile) {
+    const formData = new FormData();
+    Object.keys(payload || {}).forEach((key) => {
+      const value = payload[key];
+      if (value === undefined || value === null || value === '') return;
+      formData.append(key, value);
+    });
+
+    const { data } = await axios.patch(
+      `${backendURL}/api/user/student/profile`,
+      formData,
+      {
+        ...getAuthHeaders(token),
+        headers: {
+          ...getAuthHeaders(token).headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+    return data;
+  }
+
   const { data } = await axios.patch(
     `${backendURL}/api/user/student/profile`,
     payload,

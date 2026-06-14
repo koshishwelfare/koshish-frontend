@@ -4,6 +4,7 @@ import { CocirculerContext } from '../context/cocirculer';
 import { CoordinatorContext } from '../context/coordinater';
 import { TeacherContext } from '../context/teacher';
 import login from '../utilities/App/login';
+import { recoverCredentialsByRole } from '../utilities/App/login';
 import { AppContext } from '../context/app';
 const Login = () => {
     const { setCirToken } = useContext(CocirculerContext);
@@ -14,6 +15,10 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
     const [loading, setLoading] = useState(false);
+    const [recoverRole, setRecoverRole] = useState('teacher');
+    const [recoverEmail, setRecoverEmail] = useState('');
+    const [recoverUsername, setRecoverUsername] = useState('');
+    const [recoverLoading, setRecoverLoading] = useState(false);
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
@@ -35,6 +40,19 @@ const Login = () => {
             setLoading(false);
         }
     }
+
+    const onRecoverHandler = async (e) => {
+        e.preventDefault();
+        setRecoverLoading(true);
+        try {
+            await recoverCredentialsByRole(backendURL, recoverRole, {
+                email: recoverEmail,
+                username: recoverUsername
+            });
+        } finally {
+            setRecoverLoading(false);
+        }
+    };
 
     return (
         <section className="flex min-h-screen items-center px-4 py-10 sm:px-6">
@@ -98,6 +116,44 @@ const Login = () => {
                             {loading ? 'Signing in...' : 'Login'}
                         </button>
                     </form>
+
+                    <div className="mt-6 border-t border-slate-200 pt-5">
+                        <p className="mb-3 text-sm font-semibold text-slate-700">Forgot Password</p>
+                        <form className="space-y-3" onSubmit={onRecoverHandler}>
+                            <select
+                                value={recoverRole}
+                                onChange={(e) => setRecoverRole(e.target.value)}
+                                className="admin-input"
+                                required
+                            >
+                                <option value="teacher">Teacher</option>
+                                <option value="cocircular">Co-curricular</option>
+                                <option value="student">Student</option>
+                            </select>
+
+                            <input
+                                value={recoverEmail}
+                                onChange={(e) => setRecoverEmail(e.target.value)}
+                                className="admin-input"
+                                type="email"
+                                placeholder={recoverRole === 'student' ? 'Registered email (optional for student)' : 'Registered email'}
+                                required={recoverRole !== 'student'}
+                            />
+
+                            {recoverRole === 'student' && (
+                                <input
+                                    value={recoverUsername}
+                                    onChange={(e) => setRecoverUsername(e.target.value)}
+                                    className="admin-input"
+                                    placeholder="Student username (optional if email provided)"
+                                />
+                            )}
+
+                            <button className="admin-btn admin-btn-secondary w-full py-2.5" disabled={recoverLoading} type="submit">
+                                {recoverLoading ? 'Processing...' : 'Send Recovery Credentials'}
+                            </button>
+                        </form>
+                    </div>
                 </div>
                         </div>
                 </section>

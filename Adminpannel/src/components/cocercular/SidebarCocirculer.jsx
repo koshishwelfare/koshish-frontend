@@ -7,6 +7,7 @@ const SidebarCocirculer = () => {
   const location = useLocation();
   const [expanded, setExpanded] = useState({
     members: true,
+    directories: true,
     events: false,
     landingPage: true,
     academic: true
@@ -20,7 +21,16 @@ const SidebarCocirculer = () => {
         label: 'Members',
         icon: <FaUserGraduate />,
         children: [
-          { label: 'Members', to: '/member/all' }
+          { label: 'All Members', to: '/member/all' },
+          { label: 'Add Member', to: '/member/add' }
+        ]
+      },
+      {
+        key: 'directories',
+        label: 'Directories',
+        icon: <FaUserGraduate />,
+        children: [
+          { label: 'Collaborators', to: '/directory/collaborators' }
         ]
       },
       {
@@ -50,6 +60,7 @@ const SidebarCocirculer = () => {
         children: [
           { label: 'Session Listing', to: '/academic/sessions' },
           { label: 'Class Listing', to: '/academic/classes' },
+          { label: 'Holiday Management', to: '/academic/holidays' },
           { label: 'Teacher Self Attendance', to: '/academic/teacher-attendance' }
         ]
       },

@@ -4,6 +4,8 @@ import { AppContext } from '../../../context/App'
 import AlbumCard from './AlbumCard'
 import Pagination from '../../common/Pagination'
 import SearchFilterSort from '../../common/SearchFilterSort'
+import SectionIntro from '../../common/SectionIntro'
+
 const Newspaper = () => {
   const { newspaper, handleNewsPaper } = useContext(AppContext)
   const [currentPage, setCurrentPage] = useState(1)
@@ -22,7 +24,7 @@ const Newspaper = () => {
       limit: limit,
       isNews: true
     })
-  }, [searchValue, sortValue, sortOrder, currentPage, limit])
+  }, [handleNewsPaper, searchValue, sortValue, sortOrder, currentPage, limit])
 
   useEffect(() => {
     if (newspaper && typeof newspaper === 'object' && newspaper.pagination) {
@@ -40,7 +42,7 @@ const Newspaper = () => {
 
   const displayData = newspaper && Array.isArray(newspaper.data) ? newspaper.data : (Array.isArray(newspaper) ? newspaper : [])
   return (
-    <div className="p-6">
+    <div className="app-section pt-2">
       <Helmet>
         <title> Koshish in the News</title>
         <meta name='description' content='Koshish in the News - Stay updated with the latest news articles featuring Koshish.' />
@@ -49,16 +51,10 @@ const Newspaper = () => {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta name='robots' content='index, follow' />
       </Helmet>
-      <div className="w-full px-4 py-12">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue10 mb-6">
-          Koshish in the News
-          </h2>
-          <p className="text-md sm:text-xl font-sm text-gray-700 leading-relaxed">
-          We’re proud to have been recognized in various newspapers. Here, we’ve compiled those proud moments that mark our contribution and commitment toward social impact.
-          </p>
-        </div>
-      </div>
+      <SectionIntro
+        title="Koshish in the News"
+        description="Recognitions and newspaper coverage that highlight our work and social impact."
+      />
       {/* Search, Filter, Sort */}
       <SearchFilterSort
         searchValue={searchValue}
@@ -81,7 +77,7 @@ const Newspaper = () => {
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
             {displayData.map((item, idx) => (
               <AlbumCard key={item._id || idx} item={item} />
             ))}

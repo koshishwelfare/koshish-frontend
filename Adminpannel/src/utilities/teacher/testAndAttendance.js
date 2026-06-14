@@ -40,9 +40,10 @@ const getTeacherTestSeries = async (backendURL, teaToken) => {
 
 const getTeacherStudents = async (backendURL, teaToken, classId = '') => {
   try {
+    const safeClassId = typeof classId === 'string' ? classId.trim() : String(classId || '').trim();
     const { data } = await axios.get(`${backendURL}/api/teacher/students`, {
       ...teacherHeaders(teaToken),
-      params: classId ? { classId } : {}
+      params: safeClassId ? { classId: safeClassId } : {}
     });
     if (!data.success) {
       toast.error(data.message);
@@ -323,6 +324,129 @@ const recoverStudentCredentials = async (backendURL, payload) => {
   }
 };
 
+const getTeacherClassCurriculum = async (backendURL, teaToken, classId) => {
+  if (!classId) return null;
+  try {
+    const { data } = await axios.get(`${backendURL}/api/teacher/classes/${classId}/curriculum`, teacherHeaders(teaToken));
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    return data.data || null;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const addTeacherClassSubject = async (backendURL, teaToken, classId, payload) => {
+  if (!classId) return null;
+  try {
+    const { data } = await axios.post(`${backendURL}/api/teacher/classes/${classId}/subjects`, payload, teacherHeaders(teaToken));
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Subject added');
+    return data.data || null;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const addTeacherClassChapter = async (backendURL, teaToken, classId, subjectId, payload) => {
+  if (!classId || !subjectId) return null;
+  try {
+    const { data } = await axios.post(
+      `${backendURL}/api/teacher/classes/${classId}/subjects/${subjectId}/chapters`,
+      payload,
+      teacherHeaders(teaToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Chapter added');
+    return data.data || null;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const updateTeacherClassChapterTaught = async (backendURL, teaToken, classId, subjectId, chapterId, payload = {}) => {
+  if (!classId || !subjectId || !chapterId) return null;
+  try {
+    const { data } = await axios.patch(
+      `${backendURL}/api/teacher/classes/${classId}/subjects/${subjectId}/chapters/${chapterId}/taught`,
+      payload,
+      teacherHeaders(teaToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Chapter status updated');
+    return data.data || null;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
+const getTeacherAvailableClassStudents = async (backendURL, teaToken, classId, query = {}) => {
+  if (!classId) {
+    return {
+      records: [],
+      pagination: { page: 1, limit: Number(query.limit) || 10, total: 0, totalPages: 1 }
+    };
+  }
+  try {
+    const { data } = await axios.get(`${backendURL}/api/teacher/classes/${classId}/students/available`, {
+      ...teacherHeaders(teaToken),
+      params: query
+    });
+    if (!data.success) {
+      toast.error(data.message);
+      return {
+        records: [],
+        pagination: { page: 1, limit: Number(query.limit) || 10, total: 0, totalPages: 1 }
+      };
+    }
+    return data.data || {
+      records: [],
+      pagination: { page: 1, limit: Number(query.limit) || 10, total: 0, totalPages: 1 }
+    };
+  } catch (error) {
+    toast.error(error.message);
+    return {
+      records: [],
+      pagination: { page: 1, limit: Number(query.limit) || 10, total: 0, totalPages: 1 }
+    };
+  }
+};
+
+const assignTeacherStudentsToClass = async (backendURL, teaToken, classId, payload = {}) => {
+  if (!classId) return null;
+  try {
+    const { data } = await axios.post(
+      `${backendURL}/api/teacher/classes/${classId}/students/assign`,
+      payload,
+      teacherHeaders(teaToken)
+    );
+    if (!data.success) {
+      toast.error(data.message);
+      return null;
+    }
+    toast.success(data.message || 'Students assigned successfully');
+    return data.data || null;
+  } catch (error) {
+    toast.error(error.message);
+    return null;
+  }
+};
+
 export {
   addTeacherTestSeries,
   getTeacherTestSeries,
@@ -341,5 +465,11 @@ export {
   getDailyTeachingLogs,
   addTeacherStudent,
   recoverTeacherCredentials,
-  recoverStudentCredentials
+  recoverStudentCredentials,
+  getTeacherClassCurriculum,
+  addTeacherClassSubject,
+  addTeacherClassChapter,
+  updateTeacherClassChapterTaught,
+  getTeacherAvailableClassStudents,
+  assignTeacherStudentsToClass
 };

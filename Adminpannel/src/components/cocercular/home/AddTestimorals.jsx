@@ -6,64 +6,82 @@ const AddTestimorals = () => {
      const [headline, setHeadline] = useState('')
      const [quote, setQuote] = useState('')
      const [linkedin, setLinkedin] = useState('')
-     const [image, setImage] = useState('');
-     const formData = new FormData();
-     formData.append('image',image)
-     formData.append('name',name)
-     formData.append('headline',headline)
-     formData.append('linkedin',linkedin)
-     formData.append('quote', quote)
-  const onsubmitHandler =(e)=>{
+     const [image, setImage] = useState(null);
+     const [submitting, setSubmitting] = useState(false);
+
+  const onsubmitHandler = async (e)=>{
             e.preventDefault()
-            handelTestimorals(formData);
+            setSubmitting(true);
+
+            const formData = new FormData();
+            formData.append('image', image)
+            formData.append('name', name)
+            formData.append('headline', headline)
+            formData.append('linkedin', linkedin)
+            formData.append('quote', quote)
+
+            try {
+              await handelTestimorals(formData);
+            } finally {
+              setSubmitting(false);
+            }
    }
 
   return (
-    <div className='max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg'>
-        <h2 className='text-2xl font-bold mb-6 text-gray-800'>Add Testimorals</h2>
+    <div className='admin-card mx-auto max-w-2xl p-8'>
+        <h2 className='admin-heading mb-6'>Add Testimonial</h2>
         <form onSubmit={onsubmitHandler} className='space-y-6'>
             <div>
-                <label className="block text-gray-700 font-medium mb-2">Name</label>
+                <label htmlFor="testimonial-name" className="mb-2 block text-sm font-semibold text-slate-700">Name <span className="text-rose-600">*</span></label>
                 <input 
+                id="testimonial-name"
                 value={name}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='admin-input'
                 onChange={(e)=> setName(e.target.value)}
-                type="test" />
+                type="text"
+                required />
             </div>
             <div>
-                <label className='block text-gray-700 font-medium mb-2' >Upload Image</label>
+                <label htmlFor="testimonial-image" className='mb-2 block text-sm font-semibold text-slate-700' >Upload Image <span className="text-rose-600">*</span></label>
                 <input 
-                // value={image}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                id="testimonial-image"
+                className='admin-input'
                 onChange={(e)=> setImage(e.target.files[0])}
-                type="file" />
+                type="file"
+                accept="image/*"
+                required />
             </div>
             <div>
-                <label className="block text-gray-700 font-medium mb-2">Headline</label>
+                <label htmlFor="testimonial-headline" className="mb-2 block text-sm font-semibold text-slate-700">Headline <span className="text-rose-600">*</span></label>
                 <input 
+                id="testimonial-headline"
                 value={headline}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='admin-input'
                 onChange={(e)=> setHeadline(e.target.value)}
-                type="test" />
+                type="text"
+                required />
             </div>
             <div>
-                <label className='block text-gray-700 font-medium mb-2'>linkedin</label>
+                <label htmlFor="testimonial-linkedin" className='mb-2 block text-sm font-semibold text-slate-700'>LinkedIn</label>
                 <input 
+                id="testimonial-linkedin"
                 value={linkedin}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='admin-input'
                 onChange={(e)=> setLinkedin(e.target.value)}
                 type="text" />
             </div>
             <div>
-                <label className='block text-gray-700 font-medium mb-2' >quote</label>
+                <label htmlFor="testimonial-quote" className='mb-2 block text-sm font-semibold text-slate-700' >Quote <span className="text-rose-600">*</span></label>
                 <textarea 
+                id="testimonial-quote"
                 value={quote}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='admin-input'
                 onChange={(e)=> setQuote(e.target.value)}
+                required
                 ></textarea>
             </div>
 
-            <button className='w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'>Add Testimorals</button>
+            <button className='admin-btn admin-btn-primary w-full' disabled={submitting}>{submitting ? 'Saving...' : 'Add Testimonial'}</button>
 
 
         </form>

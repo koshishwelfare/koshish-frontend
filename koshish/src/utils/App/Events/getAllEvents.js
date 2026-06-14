@@ -15,6 +15,11 @@ const buildQueryParams = (options = {}) => {
   return params;
 };
 
+const normalizeListPayload = (payload) => ({
+  data: Array.isArray(payload?.data) ? payload.data : [],
+  pagination: payload?.pagination || null
+});
+
 const getHomeEvent = async (backendURL,setHomeEvent,options = {}) => {
   try {
      const {data} = await axios.get(backendURL + '/api/app/events', {
@@ -33,7 +38,6 @@ const getHomeEvent = async (backendURL,setHomeEvent,options = {}) => {
      }
      else if(data.data.length ==0){
       setHomeEvent('NODATA')
-      toast.info(data.message)
      }
      else toast.error(data.message);
   } catch (error) {
@@ -51,11 +55,7 @@ const getNewEvent = async (backendURL,setHomeEvent,options = {}) => {
         })
        })
        if (data.success) {
-         if(data.data.length==0) {
-            setHomeEvent("NODATA")
-           }
-         else  setHomeEvent(data.data)
-          toast.success(data.message)
+          setHomeEvent(normalizeListPayload(data))
        }
        else toast.error(data.message);
     } catch (error) {
@@ -73,11 +73,7 @@ const getNewEvent = async (backendURL,setHomeEvent,options = {}) => {
         })
        })
        if (data.success) {
-           if(data.data.length==0) {
-            setHomeEvent("NODATA")
-           }
-         else  setHomeEvent(data.data)
-          toast.success(data.message)
+         setHomeEvent(normalizeListPayload(data))
        }
        else toast.error(data.message);
     } catch (error) {
@@ -91,7 +87,6 @@ const getNewEvent = async (backendURL,setHomeEvent,options = {}) => {
       const {data} = await axios.post(backendURL + '/api/app/events/id',{id})
       if (data.success) {
          setIdEvent(data.data)
-         toast.success(data.message)
       }
       else toast.error(data.message);
    } catch (error) {

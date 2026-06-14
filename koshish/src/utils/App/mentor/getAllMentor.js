@@ -15,18 +15,21 @@ const buildQueryParams = (options = {}) => {
   return params;
 };
 
+const normalizeListPayload = (payload) => ({
+  data: Array.isArray(payload?.data) ? payload.data : [],
+  pagination: payload?.pagination || null
+});
+
 const getAllMentor = async (backendURL,setAllMentor,options = {}) => {
    try {
   const {data} = await axios.get(backendURL+ '/api/app/member/all', {
         params: buildQueryParams(options)
        })
        if(data.success) {
-           setAllMentor(data.data);
-           toast.success(data.message);
+             setAllMentor(normalizeListPayload(data));
        }
        else toast.error(data.message);
    } catch (error) {
-     console.log(error);
      setAllMentor('5xx');
      toast.error(error.message);
    }
@@ -35,18 +38,15 @@ const getAllAlumni = async (backendURL,setAllAlumni,options = {}) => {
   try {
       const {data} = await axios.get(backendURL+ '/api/app/member/all', {
         params: buildQueryParams({
-          isActive: false,
-          isVisionary: false,
+          role: 'alumni',
           ...options
         })
       })
       if(data.success) {
-        setAllAlumni(data.data);
-          toast.success(data.message);
+        setAllAlumni(normalizeListPayload(data));
       }
       else toast.error(data.message);
   } catch (error) {
-    console.log(error);
     setAllAlumni('5xx');
     toast.error(error.message);
   }
@@ -55,17 +55,15 @@ const getAllFaculty = async (backendURL,setAllAlumni,options = {}) => {
   try {
       const {data} = await axios.get(backendURL+ '/api/app/member/all', {
         params: buildQueryParams({
-          isVisionary: true,
+          role: 'visionary',
           ...options
         })
       })
       if(data.success) {
-        setAllAlumni(data.data);
-          toast.success(data.message);
+        setAllAlumni(normalizeListPayload(data));
       }
       else toast.error(data.message);
   } catch (error) {
-    console.log(error);
     setAllAlumni('5xx');
     toast.error(error.message);
   }
@@ -76,12 +74,10 @@ const SearchMembers = async (backendURL,setSearchMember,name,options = {}) => {
         params: buildQueryParams({ q: name, ...options })
       })
       if(data.success) {
-        setSearchMember(data.data);
-          toast.success(data.message);
+        setSearchMember(normalizeListPayload(data));
       }
       else toast.error(data.message);
   } catch (error) {
-    console.log(error);
     setSearchMember('5xx');
     toast.error(error.message);
   }
@@ -93,7 +89,6 @@ const getTopmentor = async (backendURL,setTopMentor,options = {}) => {
         params: buildQueryParams({
           isTop: true,
           isActive: true,
-          isVisionary: false,
           page: 1,
           limit: 4,
           sortBy: 'joinTime',
@@ -113,14 +108,13 @@ const getTopmentor = async (backendURL,setTopMentor,options = {}) => {
 
 const getCoOrdinator = async (backendURL,setCoOrdi,options = {}) => {
   try {
-      const {data} = await axios.get(backendURL+ '/api/app/member/all', {
+      const {data} = await axios.get(backendURL+ '/api/app/co-curricular/list', {
         params: buildQueryParams({
           isTop: true,
-          isActive: true,
-          isVisionary: true,
+          isactive: true,
           page: 1,
           limit: 1,
-          sortBy: 'joinTime',
+          sortBy: 'date',
           sortOrder: 'desc',
           ...options
         })

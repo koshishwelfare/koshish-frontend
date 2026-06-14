@@ -6,7 +6,7 @@ const AlbumCard = ({item}) => {
   return (
     <div
     key={item._id}
-    className="bg-green-100 border rounded-lg shadow hover:shadow-md transition cursor-pointer"
+    className="app-card cursor-pointer overflow-hidden border border-emerald-100 transition hover:-translate-y-1 hover:shadow-xl"
     onClick={() => navigate(`/gallery/${item._id}`)}
   >
     <Helmet>
@@ -23,11 +23,11 @@ const AlbumCard = ({item}) => {
     <img
       src={item.thumbnail}
       alt="thumbnail"
-      className="w-full h-48 object-cover rounded-t-lg"
+      className="h-48 w-full object-cover"
     />
     <div className="p-3">
-      <h3 className="text-lg text-blue10 font-semibold">{item.galleryTitle}</h3>
-      <p className="text-md text-gray-900">
+      <h3 className="text-lg font-semibold text-blue10">{item.galleryTitle}</h3>
+      <p className="text-sm text-slate-700">
         {new Date(item.date).toLocaleDateString()}
       </p>
     </div>

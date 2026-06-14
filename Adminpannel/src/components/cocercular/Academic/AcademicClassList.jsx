@@ -20,9 +20,28 @@ const AcademicClassList = () => {
     grade: '',
     section: 'A',
     sessionId: '',
-    mentorId: ''
+    mentorId: '',
+    teacherIds: []
   });
+  const [mentorToAdd, setMentorToAdd] = useState('');
   const [errors, setErrors] = useState({});
+
+  const addMentorTag = () => {
+    if (!mentorToAdd) return;
+    setForm((prev) => ({
+      ...prev,
+      teacherIds: [...new Set([...(prev.teacherIds || []), mentorToAdd, prev.mentorId].filter(Boolean))]
+    }));
+    setMentorToAdd('');
+  };
+
+  const removeMentorTag = (mentorId) => {
+    if (!mentorId || mentorId === form.mentorId) return;
+    setForm((prev) => ({
+      ...prev,
+      teacherIds: (prev.teacherIds || []).filter((id) => id !== mentorId)
+    }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -58,9 +77,19 @@ const AcademicClassList = () => {
     if (!validateForm()) {
       return;
     }
-    const created = await handleAddAcademicClass(form);
+    const payload = {
+      name: String(form.name || '').trim(),
+      grade: String(form.grade || '').trim(),
+      section: String(form.section || 'A').trim().toUpperCase(),
+      sessionId: String(form.sessionId || '').trim(),
+      mentorId: String(form.mentorId || '').trim(),
+      teacherIds: [...new Set([String(form.mentorId || '').trim(), ...(form.teacherIds || []).map((id) => String(id).trim())].filter(Boolean))]
+    };
+
+    const created = await handleAddAcademicClass(payload);
     if (created) {
-      setForm({ name: '', grade: '', section: 'A', sessionId: '', mentorId: '' });
+      setForm({ name: '', grade: '', section: 'A', sessionId: '', mentorId: '', teacherIds: [] });
+      setMentorToAdd('');
       setErrors({});
       setIsCreateOpen(false);
       await handleGetAcademicClasses();
@@ -91,6 +120,18 @@ const AcademicClassList = () => {
             key: 'mentor',
             label: 'Mentor',
             render: (row) => row.mentorId?.name || '-'
+          },
+          {
+            key: 'assignedMentors',
+            label: 'Assigned Mentors',
+            render: (row) => {
+              const mentors = Array.isArray(row.teacherIds) ? row.teacherIds : [];
+              if (!mentors.length) return '-';
+              return mentors
+                .map((mentor) => mentor?.name || mentor?.username || mentor?.email || '')
+                .filter(Boolean)
+                .join(', ');
+            }
           },
           {
             key: 'createdAt',
@@ -178,7 +219,12 @@ const AcademicClassList = () => {
                   className={`w-full rounded border px-3 py-2 ${errors.mentorId ? 'border-red-500 bg-red-50' : ''}`}
                   value={form.mentorId}
                   onChange={(e) => {
-                    setForm((p) => ({ ...p, mentorId: e.target.value }));
+                    const mentorId = e.target.value;
+                    setForm((p) => ({
+                      ...p,
+                      mentorId,
+                      teacherIds: [...new Set([mentorId, ...(p.teacherIds || [])].filter(Boolean))]
+                    }));
                     if (errors.mentorId) setErrors((p) => ({ ...p, mentorId: '' }));
                   }}
                   required
@@ -191,10 +237,48 @@ const AcademicClassList = () => {
                 {errors.mentorId && <p className="mt-1 text-xs text-red-600">{errors.mentorId}</p>}
               </div>
 
+              <div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto]">
+                  <select
+                    className="w-full rounded border px-3 py-2"
+                    value={mentorToAdd}
+                    onChange={(e) => setMentorToAdd(e.target.value)}
+                  >
+                    <option value="">Select mentor to assign</option>
+                    {academicMentors.map((mentor) => (
+                      <option key={mentor._id} value={mentor._id}>{mentor.name} ({mentor.email})</option>
+                    ))}
+                  </select>
+                  <button type="button" className="rounded bg-slate-800 px-3 py-2 text-sm text-white" onClick={addMentorTag}>
+                    Add
+                  </button>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(form.teacherIds || []).map((mentorId) => {
+                    const mentor = academicMentors.find((m) => String(m._id) === String(mentorId));
+                    const label = mentor ? `${mentor.name}` : mentorId;
+                    const isPrimary = String(form.mentorId) === String(mentorId);
+                    return (
+                      <span key={mentorId} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${isPrimary ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>
+                        {label}
+                        {isPrimary ? ' (Primary)' : ''}
+                        {!isPrimary && (
+                          <button type="button" className="ml-1 rounded px-1 text-slate-500 hover:bg-slate-200" onClick={() => removeMentorTag(mentorId)}>
+                            x
+                          </button>
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+                <p className="mt-1 text-xs text-slate-500">Assign multiple mentors. Primary mentor is always included.</p>
+              </div>
+
               <div className="flex justify-end gap-2 pt-1">
                 <button type="button" onClick={() => {
                   setIsCreateOpen(false);
                   setErrors({});
+                  setMentorToAdd('');
                 }} className="rounded border px-3 py-1.5 text-sm">Cancel</button>
                 <button type="submit" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">Create</button>
               </div>

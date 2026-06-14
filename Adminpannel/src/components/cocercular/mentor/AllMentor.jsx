@@ -7,12 +7,18 @@ import FilterToolbar from '../../common/FilterToolbar';
 import DataTable from '../../common/DataTable';
 import { toast } from 'react-toastify';
 
-const AllMentor = () => {
-  const { getMentor, handelgetMentor } = useContext(CocirculerContext);
+const AllMentor = ({ defaultRole = '', title = 'All Members' }) => {
+  const { getMentor, handelgetMentor, handleUpdateMemberRoleById } = useContext(CocirculerContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState(defaultRole);
+
+  const roleOptions = ['mentor', 'alumni', 'sponsor', 'visionary', 'cocurricular', 'collaborator'];
+
+  useEffect(() => {
+    setFilter(defaultRole);
+  }, [defaultRole]);
 
   useEffect(() => {
     handelgetMentor();
@@ -54,7 +60,25 @@ const AllMentor = () => {
     {
       key: 'role',
       label: 'Role',
-      render: (row) => (row.role ? `${row.role.charAt(0).toUpperCase()}${row.role.slice(1)}` : '-')
+      render: (row) => (
+        <select
+          value={String(row.role || 'mentor').toLowerCase()}
+          onChange={async (e) => {
+            const nextRole = e.target.value;
+            const ok = await handleUpdateMemberRoleById(row._id, nextRole);
+            if (ok) {
+              handelgetMentor();
+            }
+          }}
+          className="rounded border border-slate-300 px-2 py-1 text-sm"
+        >
+          {roleOptions.map((role) => (
+            <option key={role} value={role}>
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </option>
+          ))}
+        </select>
+      )
     },
     { key: 'position', label: 'Position' },
     { key: 'email', label: 'Email' },
@@ -105,7 +129,7 @@ const AllMentor = () => {
   return (
     <div className="space-y-6">
       <ListPageHeader
-        title="All Members"
+        title={title}
         searchValue={search}
         onSearchChange={setSearch}
         addButtonText="Add Member"
@@ -123,6 +147,8 @@ const AllMentor = () => {
           { label: 'Mentor', value: 'mentor' },
           { label: 'Alumni', value: 'alumni' },
           { label: 'Sponsor', value: 'sponsor' },
+          { label: 'Visionary', value: 'visionary' },
+          { label: 'Co-Curricular', value: 'cocurricular' },
           { label: 'Collaborator', value: 'collaborator' }
         ]}
         sortOptions={[

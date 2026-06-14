@@ -62,8 +62,7 @@ const GetMentorById = () => {
           <p><strong>LinkedIn:</strong> {MentorById.linkedin || '-'}</p>
           <p><strong>Top Member:</strong> {MentorById.isTop ? 'Yes' : 'No'}</p>
           <p><strong>Active:</strong> {MentorById.isActive ? 'Yes' : 'No'}</p>
-          <p><strong>Visionary:</strong> {MentorById.isVisionary ? 'Yes' : 'No'}</p>
-          <p><strong>Certified:</strong> {MentorById.isCertify ? 'Yes' : 'No'}</p>
+          <p><strong>Role:</strong> {MentorById.role || '-'}</p>
         </div>
       </div>
 
