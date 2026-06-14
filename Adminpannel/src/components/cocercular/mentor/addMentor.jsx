@@ -59,6 +59,7 @@ const AddMentor = () => {
           onChange={(e) => setRole(e.target.value)}
           className={inputField}
         >
+          <option value={''} disabled>Select Role</option>
           <option value="mentor">Mentor</option>
           <option value="alumni">Alumni</option>
           <option value="sponsor">Sponsor</option>
